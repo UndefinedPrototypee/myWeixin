@@ -1,4 +1,4 @@
-package core;
+package cource.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

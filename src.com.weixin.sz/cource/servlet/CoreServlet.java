@@ -1,4 +1,4 @@
-package core;
+package cource.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import cource.service.CoreService;
+import cource.util.SignUtil;
 
 /**
  * TODO Weixin核心处理类 
@@ -52,9 +56,20 @@ public class CoreServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {  
-        // TODO 消息的接收、处理、响应  
-    }  
+        // 消息的接收、处理、响应   将请求、响应的编码均设置为UTF-8（防止中文乱码）  
+        request.setCharacterEncoding("UTF-8");  
+        // 微信服务器POST消息时用的是UTF-8编码，在接收时也要用同样的编码，否则中文会乱码；在响应消息（回复消息给用户）时，也将编码方式设置为UTF-8，原理同上；
+        response.setCharacterEncoding("UTF-8");  
   
+        // 调用核心业务类接收消息、处理消息  ,调用CoreService类的processRequest方法接收、处理消息，并得到处理结果；
+        String respMessage = CoreService.processRequest(request);  
+          
+        // 响应消息  ,调用response.getWriter().write()方法将消息的处理结果返回给用户
+        PrintWriter out = response.getWriter();  
+        out.print(respMessage);  
+        out.close();  
+    }  
+    
     /** 
 	 * TODO 解析微信发来的请求（XML） 
 	 *  
