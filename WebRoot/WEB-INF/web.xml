@@ -7,7 +7,7 @@
     <servlet>  
         <servlet-name>coreServlet</servlet-name>  
         <servlet-class>  
-        	core.CoreServlet
+        	cource.servlet.CoreServlet
         </servlet-class>  
     </servlet>  
     <!-- url-pattern中配置的/coreServlet用于指定该Servlet的访问路径 -->  
