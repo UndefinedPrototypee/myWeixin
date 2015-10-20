@@ -15,7 +15,7 @@ public class SignUtil {
 	private static String token = "myWeixinCourse";
 
 	/**
-	 * 验证签名
+	 * TODO 验证签名
 	 * 
 	 * @param signature
 	 * @param timestamp
@@ -48,7 +48,7 @@ public class SignUtil {
 	}
 
 	/**
-	 * 将字节数组转换为十六进制字符串
+	 * TODO 将字节数组转换为十六进制字符串
 	 * 
 	 * @param byteArray
 	 * @return
@@ -62,7 +62,7 @@ public class SignUtil {
 	}
 
 	/**
-	 * 将字节转换为十六进制字符串
+	 * TODO 将字节转换为十六进制字符串
 	 * 
 	 * @param mByte
 	 * @return
