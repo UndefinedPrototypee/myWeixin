@@ -2,8 +2,7 @@ package cource.usetools;
 
 import java.util.Date;
 import java.util.regex.Matcher;
-
-import org.dom4j.rule.Pattern;
+import java.util.regex.Pattern;
 
 import cource.message.resp.TextMessage;
 import cource.util.MessageUtil;
