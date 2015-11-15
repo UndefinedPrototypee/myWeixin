@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>我的关注</title>
+	<link rel="stylesheet" href="../../../styles/mysf/style_hyn.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../../styles/mysf/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../../styles/mysf/ordercommon.css" type="text/css"></link>
+</head>
+<body class="my-flow">
+
+	<ul class="tab my-flow-tab d-flex">
+		<li class="flex-1 on">服务点</li>
+		<li class="flex-1">快递员</li>
+	</ul>
+	
+	<!-- 服务点列表 -->
+	<ul class="ser-lists" id="more" style="display:none">
+		<li class="ser more">
+			<a href="ser-nearby.html"><h3>附近服务点</h3><p>需要关注/找更多顺丰服务点？</p></a>
+		</li>
+	</ul>
+	
+	<!-- 关注的快递员列表信息 -->
+	<ul class="ser-lists cer-lists hide" id="cerMyflow">
+	</ul>
+		
+	<!-- 遮罩弹出层2 -->
+	<div id="wait" class="order_layer_iframe1 clearfix" style="display:;position: fixed; margin-top: -23%;">
+		<div class="container clearfix">
+			<!-- <i class="close">close</i> -->
+			<!-- 登录loading -->
+			<div class="content_loading clearfix" id="content_scjl" style="display:;">
+				<h3 class="title"><img src="/css/sc/weiwap/img/loading4.gif" width="48" height="48"></h3>
+				<div class="box">
+					<p>正在查询</p>
+				</div>
+			</div>
+		</div>
+	</div>	
+	
+</body>
+
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<!-- <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
+<script type="text/javascript" src="/js/jweixin-1.0.0.js"></script>
+<!-- <script type="text/javascript" src="/js/weiwap/mysf/common.js"></script> -->
+<script type="text/javascript" src="/js/weiwap/orderPlus/commonUtil.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/jutil.mysf.js"></script>
+<script type="text/javascript">
+	var ucmpBase="";
+	var count = "1";
+	var menNo="";//绑定会员号
+	var isFirst = 0;
+	// 服务点 ~ 快递员页签切换
+	$(".tab li").each(function(i){
+		$(this).click(function(){
+			$(this).addClass("on").siblings().removeClass("on");
+			$(".ser-lists").eq(i).removeClass("hide").siblings(".ser-lists").addClass("hide");
+			if($(this).text() == "快递员"){
+		        // 于2015年11月13日16:02:56-SFIT1108添加 隐藏附近服务点相关数据与等待CSS
+		        /* 
+		        $("#more").empty();
+		         */
+		        $("#more").css("display", "none");
+		        $("#wait").css("display", "none");
+		        $("#cerMyflow").css("display", "block");
+		        
+				if(isFirst < 1){
+					queryAttentionCourierByNo();
+				}
+				isFirst += 1;
+			} else {
+				/* 
+				// 置空快递员页签
+				$("#cerMyflow").empty();
+				 */
+				// 被快递员面签去掉了 
+				if ($("li.ser.more").length == 0) {
+					var moreDom = "<li class='ser more' style='display:'><a href='ser-nearby.html'><h3>附近服务点</h3><p>需要关注/找更多顺丰服务点？</p></a></li>";
+					$("#more").append(moreDom);
+				}
+			    // $("#more").css("display", "block");
+		        $("#wait").css("display", "block");
+		        // 隐藏快递数据 
+		        $("#cerMyflow").css("display", "none");
+				// 执行初始化页面，查询当前地理位置信息后附近服务点数据查询 
+				POS.getlocAndServPoint();
+			}
+		});
+	});
+	
+	$(document).ready(function(){
+
+		/** TODO 百度SEO统计； */
+		var _hmt = _hmt || [];
+		(function() {
+		   var hm = document.createElement("script");
+		   hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+		   var s = document.getElementsByTagName("script")[0]; 
+		   s.parentNode.insertBefore(hm, s);
+		})();
+
+		getckNew();
+		getUserIsBindMenNo();
+		setWxConfig();
+
+		// 执行初始化页面，查询当前地理位置信息后附近服务点数据查询 
+		POS.getlocAndServPoint();
+	});
+	//初始化会员信息
+	function getckNew(){
+		$.ajax({  
+	         type : "post",  
+	         url : "/service/weixin/getUcmpBaseInfo",  
+	         data : "",  
+	         async : false,  
+	         dataType : "json",
+	         success : function(data){  
+	        	 ucmpBase = data;
+	         },error:function(XMLHttpRequest, textStatus, errorThrown){
+	      	    count++;
+	     	    if(count<=2){
+	     	    	getckNew();
+	     	    }
+	 		}     
+	    });
+	}
+	//查询关注的快递员列表
+	function queryAttentionCourierByNo(){
+        
+		var html = "";
+		var jsonStr = '{'
+					 +'"countryCode":"'+ucmpBase.countryCode+'",'
+					 +'"langCode":"'+ucmpBase.langCode+'",'
+					 +'"mediaCode":"WEIXIN",'
+					 +'"systemCode":"'+ucmpBase.systemCode+'",'
+					 +'"wxID":"'+ucmpBase.userId+'",'
+					 +'"memNo":"'+menNo+'"'
+					 +'}';	
+		$.ajax({
+			type:'post',
+			data:jsonStr,
+			dataType:'json',
+			contentType:'application/json;charset=utf-8',
+			url:ucmpBase.host+'/api/wayBillService/queryAttentionCourierByNo',
+			success:function(data){
+				if(data.status == "1"){
+					var array = data.result.courierReturnList;
+					if(array != undefined){
+						for(var i=0;i<array.length;i++){
+							var quanshu = Math.round(array[i].workExperience*365*100/40000);
+							var href = "cer-info.html?courierNo="+array[i].courierNo;
+							html += '<a href='+href+'>';
+							html += '<li class="ser">';
+							html += '<div class="ser-info-box d-flex">';
+							html += '<img class="logo radius100" src="http://www.sf-express.com/cn/sc/.galleries/promotion/wanda_small_sc.jpg">';	
+							html += '<figure class="flex-right flex-1">';
+							html += '<h2 class="h1">'+array[i].courierName+'</h2>';
+							html += '<p>电话 ：'+array[i].courierTel+'<br>工号 ：'+array[i].courierNo+'<br>我在顺丰跑过的路可以绕地球'+quanshu+'圈</p>';
+							html += '</figure>';
+							html += '</div>';
+							html += '<div class="ser-to d-flex">';
+							html += '<span></span>';
+							html += '<p class="flex-1"><a class="order" href="/weiwap/orderPlus/order.html">找Ta寄件</a><a class="tel" href="#">支持Ta</a></p>';
+							html += '</div>';
+							html += '</li>';
+							html += '</a>';
+						}
+					}
+				}
+				html += '<li class="ser more">';
+				html += '<a href="javascript:checkScanQRCode();"><h3>扫一扫关注收派员</h3><p>扫一扫快递员名片码可关注他哦~</p></a>';
+				html += '</li>';
+				$("#cerMyflow").append(html);
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown){
+				html += '<li class="ser more">';
+				html += '<a href="javascript:checkScanQRCode();"><h3>扫一扫关注收派员</h3><p>扫一扫快递员名片码可关注他哦~</p></a>';
+				html += '</li>';
+				$("#cerMyflow").append(html);
+			}
+		});
+	}
+	//判断用户否绑定会员
+	function getUserIsBindMenNo(){
+		$.ajax({
+			type:"POST",
+			data:"",
+			async : false,  
+			dataType:"json",
+			url:"/service/evaluation/getUserMenNo",
+			success:function (json){
+				if(json != null){
+					menNo=json.menNo;
+				}else{
+					menNo="";
+				}
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown){
+			}
+		});
+	}
+	//扫一扫快递员
+	function checkScanQRCode(){
+//		打印页面页面展示处理
+		jWeixin.scanQRCode({
+		    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+		    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+		    success: function (res) {
+		    	var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+		    	alert(result);
+		    	var array = result.split(",");
+		    	if(array.length > 1&&array != null){
+		    		var courierNo = array[1];
+		    		alert("11111111111");
+		    		alert(courierNo);
+		    		servPoint.attentionCourier(courierNo);
+		    	}
+		    	//https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfcb8670293f88f36&redirect_uri=http://cuat.web.sf-express.com/service/weixin/callback&response_type=code&scope=snsapi_base&state=gh_51956930efca__UCMP_WX_ZNZDSCAN__ZQ-SF800-75500005#wechat_redirect
+		    	//var results= "http://ucmp.sf-express.com/service/scan/gotoZNZD?deviceId=123&storeId=123456";
+		    }
+		});
+	}
+	/**
+	*初始化微信信息  必须的
+	*/
+	function setWxConfig(){
+		var url = window.location.href;
+		var mm={};
+		mm.url=url;
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			data:mm,
+			cache: false,
+			url:"/service/weixin/querySignService",
+			success:function (wxConfig){
+				jWeixin.config({
+				    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				    appId: wxConfig.appId, // 必填，公众号的唯一标识
+				    timestamp: wxConfig.timestamp, // 必填，生成签名的时间戳
+				    nonceStr: wxConfig.nonceStr, // 必填，生成签名的随机串
+				    signature: wxConfig.signature,// 必填，签名，见附录1
+				    jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+				});
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown){
+			}
+		});
+	}
+
+// 地理位置对象 
+var POS = {};
+// 获取当前地理位置信息
+POS.getlocAndServPoint = function() {
+    // 显示等待
+    $("#content_scjl").css("display","block");
+	// alert(".............");
+	if(navigator.geolocation){
+		// tipsDialog("正在努力获取位置...");
+		var options = {enableHighAccuracy:true,timeout:5000,maximumAge:30000};
+		// 执行查询地址并查询 
+		navigator.geolocation.getCurrentPosition(
+			this.successCallback, 
+			this.errorCallback, 
+			options
+		);
+	}else{
+		if (POS.lng && "" != POS.lng && POS.lat && "" != POS.lat) {
+			// 执行页面数据查询
+			servPoint.searchAttedPoint(POS.lng, POS.lat);
+		} else {
+	        // 隐藏等待
+	        $("#content_scjl").css("display","none");
+			tipsDialog("定位失败,用户已禁用位置获取权限");
+		}
+	}
+};
+// 获取成功
+POS.successCallback = function(position) {
+	var longitude = position.coords.longitude;  //"113.93994927";"113.93994927";//
+	var latitude = position.coords.latitude;  //"22.52583739";//"22.52583739";//
+	// alert("lng:" + longitude + ",lat:" + latitude);
+    POS.lng = longitude;
+    POS.lat = latitude;
+ 	// 执行页面数据查询
+	servPoint.searchAttedPoint(longitude, latitude);
+};
+// 获取失败 
+POS.errorCallback = function(error) {
+    // 如果页面已存在位置
+    if (POS.lng && "" != POS.lng && POS.lat && "" != POS.lat) {
+        // 执行页面数据查询
+        servPoint.searchAttedPoint(longitude, latitude);
+    } else {
+        // 错误提示
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                closeDialog();
+                tipsDialog("定位失败,用户拒绝请求地理定位");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                closeDialog();
+                tipsDialog("定位失败,位置信息是不可用");
+                break;
+            case error.TIMEOUT:
+                closeDialog();
+                tipsDialog("定位失败,请求获取用户位置超时");
+                break;
+            case error.UNKNOWN_ERROR:
+                closeDialog();
+                tipsDialog("定位失败,定位系统失效");
+                break;
+        }
+        // 如为本地或测试环境查询
+        if (!pageCommonUtil.judgeAndroidOrIphone.mobile) {
+            // 执行页面数据查询
+            servPoint.searchAttedPoint("113.934968", "22.527589");
+        } else {
+        	// 隐藏等待 ，展示附近服务点 
+            servPoint.visitNearServ();
+        }
+    }
+};
+
+// 服务点处理对象 
+var servPoint = {};
+//扫一扫关注收派员
+servPoint.attentionCourier = function(courierNo){
+	alert("方法中："+courierNo);
+	var is_ = 1;
+	var jsonStr = '{'
+			+'"countryCode":"'+ucmpBase.countryCode+'",'  //countryCode 地区编码
+			+'"langCode":"'+ucmpBase.langCode+'",'		 //langCode	    语言编码
+			+'"mediaCode":"WEIXIN",'					 //媒体
+			+'"systemCode":"'+ucmpBase.systemCode+'",'	 //systemCode 渠道
+			+'"wxID":"'+ucmpBase.userId+'",'			 //微信号
+			+'"memNo":"'+menNo+'",'						 //会员号
+			+'"courierNo":"058816",'				     //快递员员工工号
+			+'"attentionState":"'+is_+'"'				 //1:关注; 0:取消关注
+			+'}';
+		$.ajax({
+			type:'post',
+			data:jsonStr,
+			dataType:'json',   
+			contentType:'application/json;charset=utf-8',
+			url:ucmpBase.host+'/api/wayBillService/attentionCourier',
+			success:function(data){
+				alert(data);
+				//$("#attentionData").text(data.result.attentionCount);
+				window.location.href = "cer-info.html?courierNo="+courierNo;
+			}
+		});
+}
+/** 查询会员已关注的服务点列表**/ 
+servPoint.searchAttedPoint = function (longitude, latitude) {
+	longitude = longitude ? longitude : 0;
+	latitude = latitude ? latitude :0;
+	// alert("servPoint.searchAttedPoint()");
+	// 执行查询 
+	$.ajax({
+		type : "POST",
+		dataType : "json",
+		url : location.origin + "/service/addrServ/userAttentedPoint",
+		data: {"longitude" : longitude, "latitude" : latitude},
+		success : function(res) {
+			// 查询接口状态成功 
+			if (res && "" != res && res.result && "" != res.result && res.result.attentionDtoList) {
+				var dom = "";
+				// 成功状态 
+				if ("1" == res.status) {
+					// 查询结果集有值 
+					if ("" != res.result.attentionDtoList) {
+						var attentionedObj =  res.result.attentionDtoList
+						// 服务点集合
+						if (attentionedObj instanceof Array) {
+							var servStore, storeId, logPath, storeName, address, offerServ, order, offerServ, tel;
+							for(i in attentionedObj) {
+								// 单个服务点
+								servStore = attentionedObj[i];
+								// 要求大于5KM不显示
+								if (servStore.distance > 100000) {
+									continue;
+								}
+								// 所需要展示的服务点信息 
+								storeId = servStore.code;								
+								storeType = servStore.isHk 	//servStore.storeType;
+								storeName = servStore.name;
+								address = servStore.province + servStore.city + servStore.district + servStore.address;
+								offerServ = servStore.serviceContent;
+								order = "";
+								tel = servStore.tel;
+								// 获得单个Dom串 
+								dom += servPoint.getAttdDom(storeId, storeType, storeName, address, offerServ, order, tel);
+							}
+						}
+						// 填充数据
+						$("li.ser.more:first").before(dom);
+						// 1、隐藏等待隐藏域； 2、显示附近服务点  
+						servPoint.visitNearServ();
+					} else {
+						// 填充数据
+						$("li.ser.more:first").before("<li><p>没有更多服务点</p></li>");
+						// 1、隐藏等待隐藏域； 2、显示附近服务点  
+						servPoint.visitNearServ();
+					}
+				} else if ("0" == res.status){
+					// 查询接口执行失败
+					tipsDialog("查询失败，失败原因:" + res.message);
+					// 1、隐藏等待隐藏域； 2、显示附近服务点  
+					servPoint.visitNearServ();
+			  }
+			} else {
+				// 未知原因失败
+				tipsDialog("查询失败，原因" + (res.message && "" != res.message) ? (":" + res.message) : ":请求超时，请稍候再试");
+				// 1、隐藏等待隐藏域； 2、显示附近服务点  
+				servPoint.visitNearServ();
+			}
+		},
+		fail : function(res) {
+			// 1、隐藏等待隐藏域； 2、显示附近服务点  
+			servPoint.visitNearServ();
+		}
+	});
+};
+
+/***
+ * TODO 1、隐藏等待隐藏域； 2、显示附近服务点  
+ */
+servPoint.visitNearServ = function() {
+	// 隐藏等待
+    $("#content_scjl").css("display","none");
+ 	// 显示更多附近服务点
+	$("#more").css("display","block");
+};
+
+/***
+ * TODO 封装查询出的服务点HTML页面Dom对象
+ * @author sfit1108
+ * @time 2015年11月9日14:36:50
+ * @param storeId  服务点ID号
+ * @param storeType 服务点类型，决定Log显示图标路径 【字段为isHK】
+ * @param storeName 服务点名称 
+ * @param address  详细地址
+ * @param offerServ  提供服务
+ * @param order  下单
+ * @param tel  电话 
+ */
+servPoint.getAttdDom = function(storeId, storeType, storeName, address, offerServ, order, tel) {
+	var dom = "", offerService = "", logPath = ""; 
+	// 提供的服务种类 
+	offerService = servicePointUtil.getOfferServByContList(offerServ);
+	// 根据服务点类型确定显示何种图标 
+	logPath = servicePointUtil.getLogoPathByType(storeType); 
+	order = /* (order && "" != order) ? order : */ "自寄下单";
+	tel = (tel && "" != tel) ? tel : "10086";
+	
+	dom += "<li class='ser'><div class='ser-info-box d-flex' onclick='servPoint.gotoServInfo(this);'>";
+	dom += "<span class='servCode' style='display:none;'>" + storeId + "</span>";
+	dom += "<img class='logo radius100' src='" + logPath + "'>";
+	dom += "<figure class='flex-right flex-1'>";
+	dom += "<h2 class='h1 nowrap'>" + storeName + "</h2>";
+	dom += "<p class='nowrap'>" + address + "</p>";
+	dom += offerService;
+	dom += "</figure></div><div class='ser-to d-flex'><span></span>";
+	dom += "<p class='flex-1'><a class='order' href='javascript:servPoint.sendBySelf(\"" + storeId + "\")'>" + order + "</a><a class='tel' href='tel:" + tel + "'>电话</a></p>";
+	dom += "</div></li>"; 
+	return dom;
+};
+
+/**
+ * TODO 服务点列表点击事件（进入服务点详情）
+ * @author sfit1108
+ */
+servPoint.gotoServInfo = function(ele) {
+	// console.log(ele);
+	var storeId = $(ele).find(".servCode").text();
+	var url = location.origin + "/weiwap/cerinfo/ser-info.html?storeId=" + storeId;
+	window.location.href = url;
+};
+
+/**
+ * TODO 服务点自寄
+ * @author sfit1108
+ * @date 2015年11月10日10:03:07
+ */
+servPoint.sendBySelf = function(storeId) {
+	// console.info(storeId);
+	window.location.href = location.origin + "/weiwap/orderPlusmsj/order_msj.html?storeId=" + storeId;
+}
+</script>
+</html>

@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+/* yishu@live.cn 2015.08.04 */
+
+/* 信息提示dialog样式 fixed*/
+.dialog-tips {
+	position:fixed;
+	top:0;
+	width:100%;
+	z-index:100;
+	display:none;
+}
+.dialog-tips .content {
+	padding:10px;
+	background:rgba(0, 0, 0, .6);
+	color:#fff;
+	text-align:center;
+	font-size:1em;
+	max-width:620px;
+	margin:0 auto;
+}

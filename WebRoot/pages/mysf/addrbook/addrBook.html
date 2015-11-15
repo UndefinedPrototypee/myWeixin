@@ -1,0 +1,1557 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>地址簿</title>
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/style.css">
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/ordercommon.css">
+<!-- <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
+<script type="text/javascript" src="/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/common.js"></script>
+<script type="text/javascript" src="/js/weiwap/orderPlus/commonUtil.js"></script>
+<script>
+// 百度SEO统计
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<body>
+<div class="order mysf clearfix">
+	<ul class="order_tools clearfix" id="tools_address_select">
+		<li class="clearfix">
+			<div class="Left"><a class="btn search" href="javascript:addressSearchBtnClick();">&nbsp;</a></div>
+			<div class="Right">
+				<a class="btn" href="javascript:shareAddrClick();">分享地址</a>
+				<a class="btn" href="javascript:addAddrBookClick();">新建地址</a>
+				<a class="btn" href="javascript:addressEditClick();">编辑</a>
+			</div>
+		</li>
+	</ul>
+	<!-- 搜索地址工具栏 -->
+	<ul id="tools_address_search" class="order_tools clearfix" style="display: none;"><!-- 搜索 -->
+		<li class="clearfix"><!-- oninput="searchAddressPrompt()" -->
+			<div class="search_box"><input id="address_input_prompt" oninput="searchAddressPrompt()" class="search_input"  type="text" placeholder=""><input class="search_btn" name="" type="button" value="" onclick="addressSearchConfirmClick()"><i onclick="clearSearchInput()"></i></div><a class="btn" href="javascript:addressSearchCanelClick()">取消</a><!-- selectAddress.html -->
+		</li>
+	</ul>
+	<!-- 编辑地址工具栏 -->
+	<ul id="tools_address_edit" class="order_tools clearfix" style="display: none;"><!-- 编辑 -->
+		<li class="clearfix">
+			<div class="Left"><a class="btn" href="javascript:selectAll();">全选</a></div>
+			<div class="center"><a class="btn" id="js_content_scdz" href="javascript:deleteOne();">删除</a><!-- btn":可点 ； "btn"+"disabled":不可点 --></div>
+			<div class="Right"><a class="btn" href="javascript:addressEditComplete();">完成</a></div>
+		</li>
+	</ul>
+	<!-- 执行分享：分享地址工具栏 -->
+	<ul id="tools_address_share" class="order_tools clearfix" style="display: none;"><!-- 分享 -->
+		<li class="clearfix">
+			<div class="Left"><a class="btn" href="javascript:shareAddrCancel();">取消</a></div>
+			<div class="center share"><p class="btn">每次最多选2个地址分享给好友</p></div>
+			<div class="Right"><a class="btn" id="js_content_share" href="javascript:shareFun();">分享</a></div>
+		</li>
+	</ul>
+	<!-- 分享成功：接收分享地址工具栏（保存操作） -->
+	<ul id="tools_address_share_success" class="order_tools clearfix" style="display: none;"><!-- 分享 -->
+		<li class="clearfix">
+			<div class="Left"><a class="btn" href="javascript:receiveSharedObj.selAllSharedAddr();">全选</a></div>
+			<div class="center share"><p class="btn">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请选择您需要保存的地址</p></div>
+			<div class="Right"><a class="btn" id="js_content_share" href="javascript:sharedAddrSave();">保存</a></div>
+		</li>
+	</ul>
+	<!-- 分享成功：接收分享地址工具栏（编辑操作） -->
+	<ul id="tools_address_share_edit" class="order_tools clearfix" style="display: none;"><!-- 分享 -->
+		<li class="clearfix">
+			<div class="Left"><a class="btn" href="javascript:editSharedAddrCancel();">取消</a></div>
+			<div class="center share"><p class="btn">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请点击您需要修改的地址</p></div>
+			<div class="Right"><a class="btn" id="js_content_share" href="javascript:editSharedAddrCancel();">完成</a></div>
+		</li>
+	</ul>
+	
+	<div style="height:4.5rem"></div>
+	<!-- div1显示查询的地址列表 -->
+	<div id="div_address_query_list">
+	    <div id="address_query_content">
+	     
+		</div>
+		
+		<div id="address_load_more" style="display: none;" onclick="addressLoadMoreClick()">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">加载更多</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="address_loading" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">加载中...</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="address_load_nodata" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">没有更多地址...</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="address_load_error" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">出错了。。。</dt>
+				
+			</dl>
+		</div>
+		
+	</div>
+	
+	<!-- div2显示搜索出的满足条件的地址，此时的地址不具有编辑功能 -->
+	<div id="div_address_search_list"  style="display: none;">
+	    <div id="search_address_query_content">
+			<dl class="contacts address_box_search clearfix"><!-- 搜索高亮：<i class="blue">187</dl> -->
+				<dt><span>梁<i class="blue">先生</i></span><span style="padding-left:45px;" class="tel"><i class="blue">187</i>74918821</span></dt>
+				<dd class="address">广东省<i class="blue">深圳市福</i>田区<br>深圳市223联合实业有限公司</dd>
+			</dl>
+			<dl class="contacts address_box_search clearfix">
+				<dt><span>梁先生</span><span style="padding-left:45px;" class="tel"><i class="blue">187</i>74918821</span></dt>
+				<dd class="address">广东省深圳市福田区<br>深圳市223联合实业有限公司</dd>
+			</dl>
+		</div>
+		
+		
+		<div id="search_address_load_more" style="display: none;" onclick="searchaAddressLoadMoreClick()">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">加载更多</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="search_address_loading" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">加载中...</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="search_address_load_nodata" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">没有更多地址...</dt>
+				
+			</dl>
+		</div>
+		
+		<div id="search_address_load_error" style="display: none;">
+		    <dl class="contacts address_box clearfix" >
+				
+				<dt style="font-size:10px;text-align:center;">出错了。。。</dt>
+				
+			</dl>
+		</div>
+		
+	</div>
+</div>
+
+<!-- 悬浮工具菜单 -->
+<div class="tools_menu" id="js_content_tools"><a href="#"><span>Menu</span></a></div>
+
+<div class="order_layer_shade z_index" style="display: none;"></div><!--搜索地址时    遮罩弹出层 -->
+
+<div id="divId" class="order_layer_shade" style="display:none;"></div><!-- 遮罩弹出层 -->
+
+<!-- 遮罩弹出层4 -->
+<div class="order_layer_iframe3 clearfix" style="display:none;">
+	<div class="container clearfix">
+		<!-- 悬浮工具菜单 -->
+		<div class="content_gjx clearfix" style="display:none;">
+			<ul>
+				<li class="icon0912_2"><a id="scanOrder" href="javascript:void(0)" onclick="scanPlaceOrder();"><p>扫一扫下单</p></a></li>
+				<li class="icon0912_3"><a id="orderManage" href="/weiwap/orderkjgl/expManage.html"><p>快件管理</p></a></li>
+				<li class="icon0912_4"><a id="addrManage" href="/weiwap/mysf/addrBook.html"><p>地址簿管理</p></a></li>
+				<li class="icon0912_5"><a id="moonManage" href="/weiwap/monthCardManage/monthlyCard.html"><p>月结卡管理</p></a></li>
+				<li class="icon0912_6"><a id="billManage" href="javascript:void(0)" onclick="dispatchUrl('y')"><p>优惠券</p></a></li>
+				<li class="icon0912_7"><a id="clearanceing" href="/weiwap/overseasPassClearance.html"><p>通关服务</p></a></li>
+				<li class="icon0912_8"><a id="clientId" href="javascript:void(0)" onclick="customerservicedispatchUrl();"><p>在线客服</p></a></li>
+			</ul>
+		</div>
+		<i class="close">close</i>
+	</div>
+</div>
+<!-- 遮罩弹出层5 -->
+<div class="order_layer_iframe1 clearfix" style="display:none;">
+	<div class="container clearfix">
+		<i class="close">close</i>
+		<!-- 删除多个地址 -->
+		<div class="content_dzcf clearfix" id="content_scdz" style="display:none;">
+			<h3 class="title"><img src="/css/sc/weiwap/img/hint_icon.png" width="94" height="94"></h3>
+			<div class="box">
+				<p>确定要删除所选地址？</p>
+			</div>
+			<a class="btn btn1 first" href="javascript:delCancel();">取消</a>
+			<a class="btn btn1" href="javascript:selectDel();">确定</a>
+		</div>
+	</div>
+</div>
+
+<!-- 遮罩弹出层6 -->
+<!-- 删除成功 -->
+<div class="order_layer_iframe2 order_layer_iframe2_1 clearfix" style="display:none;">
+	<img class="Left" src="/css/sc/weiwap/orderPlus/img/success.png" width="68" height="68"><span class="Left" id="delIframe">删除成功</span>
+</div>
+
+<!-- 新增地址页面 iframe-->
+<div id="iframeDiv_NewAddress" style="display: none;" >
+   <iframe id="iframeId_NewAddress" name="iframeId_NewAddress" src="/weiwap/mysf/addrBook-change.html"   style="display:block;border:0px"></iframe>
+</div>
+
+<!-- 遮罩弹出层2:地址簿分享引导 -->
+<div id ="divShare" class="order_layer_iframe3 share clearfix" style="display: none;">
+	<div class="container clearfix">
+		<!-- 分享地址簿引导 -->
+		<div class="content_share clearfix" id="content_share" style="display: none;">
+			<img src="/css/sc/weiwap/orderPlus/img/shareAddress.png" width="320">
+			<a class="btn close" href="#">确定</a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+//普通查询地址参数配置
+var pageSize = 8;//查询地址簿每个页面数量 
+var couponPageNo = 1;// 页号 当前页号
+var couponTotalPage = 0; //地址总页数
+var addressTotalCount =0;//地址总记录数
+var addressBookQueryLock="on";//查询锁
+var addressBookSaveLock = "on";//保存锁
+var addressAllCount = 0;
+var selectAlls = 1 //1全选 2不选择
+//********************
+
+//搜索地址 参数配置
+var s_pageSize = 8;//查询地址簿每个页面数量 
+var s_couponPageNo = 1;// 页号 当前页号
+var s_couponTotalPage = 0; //地址总页数
+var s_addressTotalCount =0;//地址总记录数
+var s_addressBookQueryLock="on";//查询锁
+var s_addressBookSaveLock = "on";//保存锁
+//***************
+var useAddressBook_query = {};//存放每次  正常  查询出的地址信息JSON数据，所有的查询出的地址json数据都存放在这里
+var useAddressBook_search = {};//存放每次  搜索  查询出的地址信息JSON数据，所有的查询出的地址json数据都存放在这里
+var selectAddr = "";//统计勾选数据
+//var temp = Number(couponPageNo-1)*Number(pageSize);
+
+var editAddressFlag = 0;//编辑地址标记，0：地址处于非非编辑状态；1：地址处于编辑状态
+var editIndex = 0;//存放被编辑的地址的索引
+
+var deviceId = "";
+
+var addressQueryFlag="";//地址标记,是寄件传参（s）还是收件传参（r）
+
+var editIndex = 0;
+
+$(document).ready(function (){
+	   //接收传的参数
+		addressQueryFlag =   getParameter("type");
+		//接收只能终端设备Id
+		deviceId =  getParameter("deviceId");
+		// 获取源页面,如是源自于分享则展示分享数据 ,或者属于开发模式下展示
+		var sourcePage = getParameter("sourcePage");
+		if ((sourcePage && "" != sourcePage && "shareAddr" == sourcePage)/*  || location.port == '8080' */) {
+			// 判断用户是否已登录 
+			
+			// 展示被分享过来的地址簿数据 
+			receiveSharedObj.showSharedAddressBook();
+			setWxConfig();
+			// 设置由分享过来的数据操作按钮权限
+			isReceiveShared = true;
+			return;
+		} 
+		showAddressBookList(1);
+		setWxConfig();
+});
+
+//为窗口创建滚动监听，实现下拉自动刷新数据
+function scrollLister(){
+	var range = 30;             //距下边界长度/单位px 
+    var totalheight = 0;                   
+    $(window).scroll(function(){  
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
+        if(($(document).height()-range) <= totalheight) { 
+     	   $("#address_loading").show();
+     	   $("#address_load_error").hide();
+     	   var pageNum = couponPageNo+1;
+     	   
+     	   if(pageNum>couponTotalPage&&couponTotalPage!=0){
+     		    $("#address_loading").hide();
+     			$("#address_load_nodata").fadeIn();
+     			window.setTimeout(function(){
+     				$("#address_load_nodata").fadeOut(1000);
+     		    },1500);
+     			
+     			return;
+     		}
+     		
+     	   
+     	   showAddressBookList(pageNum);//自动加载数据
+           
+        }  
+    });  
+}
+
+	//地址加载更更多事件
+	function addressLoadMoreClick(){
+	   $("#address_load_more").hide();
+	   $("#address_load_error").hide();
+	   $("#address_loading").show();
+	   
+	   var pageNum = couponPageNo+1;
+	   
+	   if(pageNum>couponTotalPage&&couponTotalPage!=0){
+		    $("#address_loading").hide();
+		    $("#address_load_more").hide();
+		    $("#address_load_nodata").show();
+			return;
+		}
+	   	showAddressBookList(pageNum);//自动加载数据
+	}
+	//搜索地址加载更多地址事件
+	function searchaAddressLoadMoreClick(){
+	 
+	   $("#search_address_load_more").hide();
+	   $("#search_address_load_error").hide();
+	   $("#search_address_loading").show();
+	   
+	   var pageNums = s_couponPageNo+1;
+	   
+	   if(pageNums>s_couponTotalPage&&s_couponTotalPage!=0){
+		    $("#search_address_loading").hide();
+		    $("#search_address_load_more").hide();
+		    $("#search_address_load_nodata").show();
+			return;
+		}
+	   showAddressBookListBySearch(pageNums);//自动加载数据
+	}
+	
+	//地址选择页，搜索按钮点击   
+	function addressSearchBtnClick(){
+		$("#divId").removeClass().addClass("order_layer_shade z_index");
+		$(".order_layer_shade").show();//遮罩层显示
+		$("#tools_address_search").show();//搜索工具栏显示
+		$("#tools_address_select").hide();//地址选择工具栏隐藏
+		$("#address_input_prompt")[0].focus();
+		
+	}
+	//地址搜索取消按钮点击，返回地址选择页面
+	function addressSearchCanelClick(){
+		$("#divId").removeClass().addClass("order_layer_shade");
+		$(".order_layer_shade").hide();//遮罩层隐藏
+		
+		$("#tools_address_search").hide();//地址搜索工具栏隐藏
+		$("#div_address_search_list").hide();//地址搜索显示页面隐藏
+		$("#div_address_search_input_prompt").hide();//地址搜索输入提示页面隐藏
+		
+		
+		$("#tools_address_select").show();//地址选择工具栏显示
+		$("#div_address_query_list").show();//地址选择页面显示
+		
+		
+	}
+	//地址搜索确认按钮
+	function addressSearchConfirmClick(){
+		//初始化隐藏
+		$("#search_address_loading").hide();
+		$("#search_address_load_error").hide();
+		$("#search_address_load_more").hide();
+		$("#search_address_load_nodata").hide();
+		//*******
+		$(".order_layer_shade").hide();//遮罩层隐藏
+		
+		$("#div_address_query_list").hide();//地址选择页面隐藏
+		
+		$("#search_address_query_content").html("");//点击搜索按钮，先清空记录
+		$("#div_address_search_list").show();//地址搜索结果页显示
+		
+		//每次第一次搜索前进行初始化操作
+		 s_couponPageNo = 1;// 页号 当前页号
+		 s_couponTotalPage = 0; //地址总页数
+		 s_addressTotalCount =0;//地址总记录数
+		 s_addressBookQueryLock="on";//查询锁
+		//搜索数据，加载数据
+		showAddressBookListBySearch(1);//第一次只查询第一页结果
+	}
+	
+	//地址搜索输入框输入内容相应函数，显示提示信息
+	function searchAddressPrompt(){
+		//搜索内容发生变化时，清空已有查询内容，初始化当前查询页查询锁
+		$("#search_address_query_content").html("");//点击搜索按钮，先清空记录
+		$("#search_address_loading").hide();
+		$("#search_address_load_error").hide();
+		$("#search_address_load_more").hide();
+		$("#search_address_load_nodata").hide();
+		
+		$("#div_address_search_list").show();//地址搜索结果页显示
+		//每次第一次搜索前进行初始化操作
+		 s_couponPageNo = 1;// 页号 当前页号
+		 s_couponTotalPage = 0; //地址总页数
+		 s_addressTotalCount =0;//地址总记录数
+		 s_addressBookQueryLock="on";//查询锁
+		
+	}
+	//地址编辑点击按钮，编辑地址
+	function addressEditClick(){
+		editAddressFlag=1;
+		$(".contacts.address_box").removeClass().addClass("contacts address_box clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box current clearfix");
+		$(".change_url.b").show();//每个地址的编辑图标显示
+		$(".change_url.a").hide();//原状态隐藏
+		
+		$("#tools_address_edit").show();//地址编辑工具栏显示
+		$("#tools_address_select").hide();//地址选择工具栏隐藏
+	}
+
+	//地址编辑完成点击完成按钮
+	function addressEditComplete(){
+		editAddressFlag=0;
+		$(".contacts.address_box").removeClass().addClass("contacts address_box arrow clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box arrow current clearfix");
+		$(".change_url.b").hide();//每个地址的编辑图标显示
+		$(".change_url.a").show();
+		$("#tools_address_edit").hide();//地址编辑工具栏显示
+		$("#tools_address_select").show();//地址选择工具栏隐藏
+		$(".contacts.address_box:contains('加载')").removeClass("arrow") // 隐藏加载更多...栏的可编辑图标 
+		//重新加载地址信息列表。。。。。
+	}
+	
+	/**
+	* TODO 分享地址点击（选中）按钮，分享地址
+	* @author shit1108
+	* @date 2015年10月10日15:14:41
+	*/
+	function shareAddrClick() {
+		editAddressFlag=1;// 可编辑（选择）
+		$(".contacts.address_box").removeClass().addClass("contacts address_box clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box current clearfix");
+		$(".change_url.b").show();//每个地址的编辑图标显示
+		$(".change_url.a").hide();//原状态隐藏
+		
+		$("#tools_address_share").show();//地址分享工具栏显示
+		$("#tools_address_select").hide();//地址选择工具栏隐藏
+		isSharePage = true;
+	}
+	
+	// 用于存储是否为分享页面状态
+	var isSharePage = false;
+	// 用于判断用户选择待分享的数据量，如数据条数>5时则为true（即：不合理）; 否则为false（即合理）
+	var unreasonable = false;
+	// 用于判断页面是否为被分享过来的地址展示页面，默认为false（即：不是）; 否则为 true （即:是）
+	var isReceiveShared = false;
+	
+	/** 
+	* TODO 分享地址取消按钮
+	* @author shit1108
+	* @date 2015年10月10日15:13:44
+	*/
+	function shareAddrCancel() {
+		editAddressFlag=0; // 不可 编辑（选择）
+		$(".contacts.address_box").removeClass().addClass("contacts address_box arrow clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box arrow current clearfix");
+		$(".change_url.b").hide();//每个地址的编辑图标显示
+		$(".change_url.a").show();
+		$("#tools_address_share").hide();//地址分享工具隐藏
+		$("#tools_address_select").show();//地址选择工具栏显示
+		isSharePage = false;
+		$(".contacts.address_box:contains('加载')").removeClass("arrow");// 隐藏加载更多的可编辑图标 
+	}
+	
+	/** 
+	* TODO 分享成功后：接收的用户编辑分享地址按钮
+	* @author shit1108
+	* @date 2015年10月10日15:13:44
+	*/
+	function editSharedAddr() {
+		editAddressFlag=0; // 不可 编辑（选择）
+		$(".contacts.address_box").removeClass().addClass("contacts address_box arrow clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box arrow current clearfix");
+		$(".change_url.a").show();//每个地址的编辑图标显示
+		$(".change_url.b").hide();
+		$("#tools_address_share").hide();//地址分享工具隐藏
+		$("#tools_address_share_edit").show();//地址选择工具栏显示
+		$(".contacts.address_box:contains('没有更多')").removeClass("arrow");// 没有更多时隐藏可编辑图标  
+	}
+	/** 
+	* TODO 分享成功后：接收的用户编辑分享地址取消按钮
+	* @author shit1108
+	* @date 2015年10月10日15:13:44
+	*/
+	function editSharedAddrCancel() {
+		editAddressFlag=1; // 不可 编辑（选择）
+		$(".contacts.address_box").removeClass().addClass("contacts address_box clearfix");
+		$("#oneDl").removeClass().addClass("contacts address_box arrow current clearfix");
+		$(".change_url.a").hide();//每个地址的编辑图标隐藏
+		$(".change_url.b").show();//每个地址的选择图标显示
+		$("#tools_address_share_edit").hide();//地址分享工具隐藏
+		$("#tools_address_share").show();//地址选择工具栏显示
+	}
+	
+	/**
+	* TODO 分享成功后：用户保存分享过来的地址
+	* @author sfit1108
+	* @date 2015年10月17日17:17:05
+	*/
+	function sharedAddrSave() {
+		receiveSharedObj.saveSharedAddress();
+	}
+	
+	/**
+	 * 正常进入地址簿，显示地址簿信息 默认寄件人地址要置顶 非搜索途径进入
+	 */
+	function showAddressBookList(num){
+		//查询锁判断 off为正在查询，on为已查询过
+		if(addressBookQueryLock=="off"){
+			return;
+		}
+		addressBookQueryLock="off";
+		
+		if(num>couponTotalPage&&couponTotalPage!=0){
+			
+			return;
+		}
+		var mm={};
+		mm.condition="";
+		mm.pageSize=pageSize; //pageSize
+		mm.pageNo=num;
+		$.ajax({
+			type : "POST",
+			dataType : "json",
+			url : "/service/addrbook/userAddress/pageNew",
+			data:mm,
+			success: function(date){	
+				
+				if(date!=null&&date.status=="1"&&date.result!=null&&date.result.page!=null){
+					var pageNo=date.result.page.currentPage;
+					couponPageNo =  parseInt(pageNo);
+					couponTotalPage = parseInt(date.result.page.totalPage);
+					addressTotalCount = parseInt(date.result.page.totalCount);
+					
+					if(date.result.addressList instanceof Array && date.result.addressList.length>0){
+						
+						var json = date.result.addressList;
+						var recordLength = date.result.addressList.length;//此次查询返回的地址记录数
+						addressAllCount = parseInt(addressAllCount) + parseInt(recordLength);
+						var domStr = ''; //查询结果组装DOM
+						var toShareDom = ''; // 同时放入共享DOM
+						for(var i=0; i<json.length; i++){
+				    	  //把每次 查询出的地址数据存放在全局变量里
+						  var index = 	Number(couponPageNo-1)*Number(pageSize)+i;
+				    	  useAddressBook_query[index] = json[i];
+				    	  //**************
+							var mobile=json[i].mobile;
+							if(mobile==""||mobile==null){
+								mobile=json[i].phone;
+							}
+							if(couponPageNo==1&&i==0&&json[i].addressType=="S"){
+								domStr += '<dl id="oneDl" class="contacts address_box arrow current clearfix" onclick="chooseOneAddress('+index+',this)">';
+								toShareDom += '<dl class="contacts address_box current clearfix">';
+							}else{
+								if(editAddressFlag == 1){
+									domStr += '<dl class="contacts address_box clearfix" onclick="chooseOneAddress('+index+',this)">';
+								}else{
+									domStr += '<dl class="contacts address_box arrow clearfix" onclick="chooseOneAddress('+index+',this)">';
+								}
+								toShareDom += '<dl class="contacts address_box clearfix">';
+							}
+							domStr +='<dt><span>'+json[i].contractName+'</span><span style="padding-left:45px;" class="tel">'+mobile+'</span></dt>';
+							domStr +='<dd class="address">'+json[i].provinceName+json[i].cityName+json[i].countyName+'<br>'+json[i].address+'</dd>';
+							toShareDom +='<dt><span>'+json[i].contractName+'</span><span style="padding-left:45px;" class="tel">'+mobile+'</span></dt>';
+							toShareDom +='<dd class="address">'+json[i].provinceName+json[i].cityName+json[i].countyName+'<br>'+json[i].address+'</dd>';
+							if(editAddressFlag == 1){
+								domStr +='<dd class="change_url a" style="display: none;"><a href="javascript:updateAddress('+index+',this)">&nbsp;</a></dd>';
+								domStr +='<dd class="change_url b" style="display: block;" onclick="checkBox('+index+',this)"><div class="chk-checkbox" id="checkBoxId'+index+'"><a href="#">&nbsp;</a></div></dd>';
+							}else{
+								domStr +='<dd class="change_url a" style="display: block;" ><a href="javascript:updateAddress('+index+',this)">&nbsp;</a></dd>';
+								domStr +='<dd class="change_url b" style="display: none;" onclick="checkBox('+index+',this)"><div class="chk-checkbox" id="checkBoxId'+index+'"><a href="#">&nbsp;</a></div></dd>';
+							}							
+							domStr +='</dl>';
+							
+							toShareDom += '<dd class="change_url"><div class="chk-checkbox"><span></span></div></dd></dl>';
+						}
+						$("#address_query_content").append(domStr);
+					}
+					
+					addressBookQueryLock ="on";
+					
+					$("#address_loading").hide();
+					$("#address_load_error").hide();
+					
+					//首次查询无数据提示信息数据没有了  
+					if(couponPageNo==1&&(couponTotalPage==0||couponTotalPage==1)){
+						$("#address_load_nodata").show();
+					}else{
+						$("#address_load_more").show();
+					}
+					
+				}else{
+					addressBookQueryLock ="on";
+					
+					$("#address_loading").hide();
+					$("#address_load_error").hide();
+					
+					//首次查询无数据提示信息数据没有了  
+					if(couponPageNo==1&&(couponTotalPage==0||couponTotalPage==1)){
+						$("#address_load_nodata").show();
+					}else{
+						$("#address_load_more").show();
+					}
+				}
+				
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				addressBookQueryLock ="on";
+				$("#address_loading").hide();
+				$("#address_load_error").fadeIn();
+				window.setTimeout(function(){
+					$("#address_load_error").fadeOut(1000);
+					$("#address_load_more").show();
+			   },1500);
+				
+			}
+		});
+	}
+
+	/**
+	 * 通过搜索进入地址簿，显示地址簿信息 默认寄件人不置顶
+	 */
+	function showAddressBookListBySearch(pageNums){
+		
+		//查询锁判断 off为正在查询，on为已查询过
+		if(s_addressBookQueryLock=="off"){
+			return;
+		}
+		s_addressBookQueryLock="off";
+		
+		if(pageNums>s_couponTotalPage&&s_couponTotalPage!=0){
+			
+			return;
+		}
+		var condition=$("#address_input_prompt").val();//搜索内容条件
+		if($.trim(condition)==""){
+			condition="";
+		}
+		var mm={};
+		mm.condition=condition;
+		mm.pageSize=s_pageSize; //pageSize
+		mm.pageNo=pageNums;
+		$.ajax({
+			type : "POST",
+			dataType : "json",
+			url : "/service/addrbook/userAddress/pageNew",
+			data:mm,
+			success: function(date){			
+				if(date!=null&&date.status=="1"&&date.result!=null&&date.result.page!=null){
+					
+					var pageNo=date.result.page.currentPage;
+					s_couponPageNo =  parseInt(pageNo);
+					s_couponTotalPage = parseInt(date.result.page.totalPage);
+					s_addressTotalCount = parseInt(date.result.page.totalCount);
+					
+					if(date.result.addressList instanceof Array && date.result.addressList.length>0){
+						
+						var json = date.result.addressList;
+						var recordLength = date.result.addressList.length;//此次查询返回的地址记录数
+			
+						var domStr = ''; //查询结果组装DOM
+					
+						
+				      for(var i=0; i<json.length; i++){
+				    	  
+				    	//把每次 查询出的地址数据存放在全局变量里
+						  var index = 	Number(s_couponPageNo-1)*Number(s_pageSize)+i;
+						  useAddressBook_search[index] = json[i];
+				    	  //**************
+							
+							var mobile=json[i].mobile;
+							if(mobile==""||mobile==null){
+								mobile=json[i].phone;
+							}
+							
+							if(s_couponPageNo==1&&i==0&&json[i].addressType=="S"){
+								domStr += '<dl class="contacts address_box current clearfix" onclick="chooseSearchOneAddress('+index+',this)">';
+							}else{
+								domStr += '<dl class="contacts address_box clearfix" onclick="chooseSearchOneAddress('+index+',this)">';
+							}
+						    var contract = markKeywordByColor(json[i].contractName,condition);
+						    var mobileNum = markKeywordByColor(mobile,condition);
+						    var province  = markKeywordByColor(json[i].provinceName,condition);
+						    var city = markKeywordByColor(json[i].cityName,condition);
+						    var country = markKeywordByColor(json[i].countyName,condition);
+						    var addr = markKeywordByColor(json[i].address,condition);
+						
+							domStr +='<dt><span>'+contract+'</span><span style="padding-left:45px;" class="tel">'+mobileNum+'</span></dt>';
+							domStr +='<dd class="address">'+province+city+country+'<br>'+addr+'</dd>';
+							domStr +='</dl>';
+						
+						}
+						
+						$("#search_address_query_content").append(domStr)
+						
+					}
+					
+					s_addressBookQueryLock ="on";
+					
+					$("#search_address_loading").hide();
+					$("#search_address_load_error").hide();
+					if(s_couponPageNo==1&&(s_couponTotalPage==0||s_couponTotalPage==1)){
+						$("#search_address_load_nodata").show();
+					}else{
+						$("#search_address_load_more").show();
+					}
+					
+				}else{
+					s_addressBookQueryLock ="on";
+					
+					$("#search_address_loading").hide();
+					$("#search_address_load_error").hide();
+					
+					//首次查询无数据提示信息数据没有了  
+					if(s_couponPageNo==1&&(s_couponTotalPage==0||s_couponTotalPage==1)){
+						$("#search_address_load_nodata").show();
+					}else{
+						$("#search_address_load_more").show();
+					}
+					
+				}
+				
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				s_addressBookQueryLock ="on";
+				$("#search_address_loading").hide();
+				$("#search_address_load_error").fadeIn();
+				window.setTimeout(function(){
+					$("#search_address_load_error").fadeOut(1000);
+					$("#search_address_load_more").show();
+			   },1500);
+				
+			}
+		});
+		
+	}
+	//清空搜索输入框
+	function clearSearchInput(){
+		
+		$("#address_input_prompt").val('');
+		$("#address_input_prompt")[0].focus();
+		
+		
+	}
+	function addAddrBookClick(){
+		if(editAddressFlag==1){//地址处于编辑状态,不能选择地址到下单页
+			   return;
+		}
+		$(".order.mysf.clearfix").hide();
+	    $("#iframeDiv_NewAddress").show();
+	    $("#iframeId_NewAddress").height($(window).height());
+	    $("#iframeId_NewAddress").width($(window).width());
+	}
+	//选择普通查询的一个地址，组装到下单页面，参数a为this即被点击的元素
+	function chooseOneAddress(index,a){
+	   	if(editAddressFlag==1){//地址处于编辑状态,不能选择地址到下单页
+		   return;
+	   	}
+		editIndex = index; 
+	    //调用父页面执行填充地址操作 同时隐藏地址选择页面
+	    $(".tools_menu").hide();
+	    $(".order.mysf.clearfix").hide();
+	    $("#iframeDiv_NewAddress").show();
+	    $("#iframeId_NewAddress").height($(window).height());
+	    $("#iframeId_NewAddress").width($(window).width());
+	    // 如若是分享过来的地址簿数据  
+	    if (isReceiveShared) {
+	    	// debugger;
+		    window.frames["iframeId_NewAddress"].receiveSharedObj.updAddFrame();
+	    } else {
+		    window.frames["iframeId_NewAddress"].updateFrame();
+	    }
+	}
+	function getAddrBookChange(){
+		var json_address = useAddressBook_query[editIndex];
+		return json_address;
+	}
+	function getAddrBookSearch(){
+		var json_address = useAddressBook_search[editIndex];
+		return json_address;
+	}
+	//选择搜索查询的一个地址，组装到下单页面，参数a为this即被点击的元素
+	function chooseSearchOneAddress(index,a){
+		editIndex = index; 
+	    //调用父页面执行填充地址操作 同时隐藏地址选择页面
+	     $(".tools_menu").hide();
+	    $(".order.mysf.clearfix").hide();
+	    $("#iframeDiv_NewAddress").show();
+	    $("#iframeId_NewAddress").height($(window).height());
+	    $("#iframeId_NewAddress").width($(window).width());
+	    window.frames["iframeId_NewAddress"].updateFrame2();
+	}
+	//跳转到新增地址页面
+	function newAddress(){ 
+
+		window.parent.showNewAddressPageFromSelectAddress();
+	}
+
+	//用户无地址数据跳转到到新增地址页面
+	function newAddressHasDevice(){ 
+		var url="/weiwap/orderPlusNewaddress/newAddress.html?deviceId="+deviceId;//新建地址页面URL
+		
+		window.open(url);
+	}
+	//新增地址成功，由新建地址页面调用选择页方法
+	function newOrUpdateAddressSuccess(){
+		
+		$("#address_query_content").html('');
+		$("#address_loading").hide();
+		$("#address_load_more").hide();
+		$("#address_load_nodata").hide();
+		$("#address_load_error").hide();
+		$('#tools_address_edit').hide();
+		$('#tools_address_select').show();
+		//查询数据初始化
+		 couponPageNo = 1;// 页号 当前页号
+		 couponTotalPage = 0; //地址总页数
+		 addressTotalCount =0;//地址总记录数
+		 useAddressBook_query = {};//存放每次  正常  查询出的地址信息JSON数据，所有的查询出的地址json数据都存放在这里
+		 editAddressFlag = 0;
+		
+		showAddressBookList(1);//开始第一页数据查询
+		
+	}
+
+	//#######################新增ifram 内嵌地址页方法########################
+	//设置参数，是地址类型参数
+	function setPageParam(type){
+		
+		
+		
+		addressQueryFlag = type;
+		addressSearchCanelClick();
+		
+		if(addressTotalCount==0){
+			
+				window.parent.showNewAddressPageFromSelectAddress();
+			
+		}
+		
+	}
+
+	//获取地址总数
+	function getAddressTotalCount(){
+		return addressTotalCount;
+	}
+	//设置DeviceId
+	function setDeviceId(id){
+		deviceId = id;
+	}
+	
+	//单选框单选操作
+	function checkBox(index,a){
+		// 处理地址分享页面，则不能选择超过5条地址,默认不合理为false,即合理,当超过5条时为true,即不合理
+		if(isSharePage) {
+			// 已选中的地址数
+			var curChkLength = $("#address_query_content").find(".chk-checkbox.chk-checked").length;
+			// 当前点击的地址：如果当前点击之前已为选中状态(length>0)，则意为当前操作为不选中；若点击之前未选中(length=0),则意为当前操作即将选中:$(a).find("div.chk-checked").length > 0
+			if ($("#checkBoxId" + index).parent().children(".chk-checkbox.chk-checked").length > 0) {
+				curChkLength --;
+			} else {
+				curChkLength ++;
+			}
+			// if (curChkLength > 5) {
+			if (curChkLength > 2) { // 不能超过两条
+				$("div.center.share>p").css({"color":"red","font-weight":"bold"});
+				if (curChkLength > 6) {
+					unreasonable = true;
+				}
+				return;
+			} else {
+				$("div.center.share>p").css({"color":"#999999","font-weight":"normal"});
+				unreasonable = false;
+			}
+		} 
+		// 分享页面功能结束 .....
+		if(selectAddr == ""){
+			selectAddr = index.toString();
+		}else{
+			selectAddr = selectAddr +","+index;
+			var array = selectAddr.split(",");
+			var arr = unique(array,true);
+			selectAddr = "";
+			for(i=0;i<arr.length;i++){
+				var b = arr[i];
+				if(!isNaN(b)){
+					if(selectAddr == ""){
+						selectAddr = b.toString();
+					}else{
+						selectAddr = selectAddr + "," + b;
+					}
+				}
+			}
+		}
+		var cla = $("#checkBoxId"+index).attr("class");
+		if(cla == "chk-checkbox"){
+			$("#checkBoxId"+index).removeClass().addClass("chk-checkbox chk-checked");
+		}else{
+			$("#checkBoxId"+index).removeClass().addClass("chk-checkbox");
+		}
+		
+		/**2015年10月21日17:36:01 sfit1108 修改选择过的记录则被选中，即使后来不选中依然选中Bug **/
+		// selectAddr = shareObj.distinctArray(selectAddr);
+		if (!($("#checkBoxId"+index).attr("class") == "chk-checkbox chk-checked")) {
+			// 当前地址呈不被选中状态，则从之前的选中列表中去除 
+			for (var i = 0; i < 2; i++) {
+				if (selectAddr.indexOf(index + ",") != -1) {
+					selectAddr = selectAddr.replace(index + ",", "");
+				} else if (selectAddr.indexOf("," + index) != -1) {
+					selectAddr = selectAddr.replace("," + index, "");
+				}
+			}
+		}
+		/*************修改结束 ************/
+	}
+	
+	//全选框：全选/反选操作 
+	function selectAll(){
+		for(var i=0; i<addressAllCount; i++){
+			if(selectAlls%2==1){
+				$("#checkBoxId"+i).removeClass().addClass("chk-checkbox chk-checked");
+				// 全选操作 
+				selectAddr += i;
+				if (i != addressAllCount -1) {
+					selectAddr += ",";
+				}
+			}else{
+				$("#checkBoxId"+i).removeClass().addClass("chk-checkbox");
+				// 反选操作
+				selectAddr = null;
+			}
+		}
+		selectAlls = parseInt(selectAlls)+1;
+	}
+	
+	/**
+	 * 解析url拿到对应的参数
+	 */
+	function getParameter(name){ 
+	    var paramStr=location.search; 
+	    if(paramStr.length==0)return null; 
+	    if(paramStr.charAt(0)!='?')return null; 
+	    paramStr=unescape(paramStr); 
+	    paramStr=paramStr.substring(1); 
+	    if(paramStr.length==0)return null; 
+	    var params=paramStr.split('&'); 
+	    var p = null;
+	    for(var i=0;i<params.length;i++){
+	       if(params[i].indexOf(name) >= 0){           
+	        p = params[i].split('=');
+	        p = p[1];         
+	       }
+	   }
+	   return p;
+	}
+	/*
+	 * 单个删除函数
+	 */
+	function deleteOne(){
+		$("#divId").show();
+		$(".content_dzcf").show();
+		$(".order_layer_iframe1").show();
+		order_layer_iframe1_calculatePosition();
+	}
+	function delCancel(){
+		$(".order_layer_iframe1").hide();
+		$(".content_dzcf").hide();
+		$("#divId").hide();
+		$(".order_layer_shade.z_index").hide();
+	}
+	function selectDel(){
+		var aa = selectAddr.split(",");
+		var addrs = "";
+		for(i=0;i<aa.length;i++){
+			var bb = aa[i];
+			var addr = useAddressBook_query[bb];
+			var addrId = addr.addressId;
+			if(addrs == ""){
+				addrs = addrId;
+			}else{
+				addrs = addrs + "," + addrId;
+			}
+		}
+		daleteAddress(addrs);
+	}
+	/**
+	 * 删除基本方法
+	 *@param userAddressId 可以为单个addressId或者以逗号分隔的addressId串
+	 */
+	function daleteAddress(userAddressId){
+		if(userAddressId){
+			$.ajax({
+				type : "GET",
+				dataType : "json",
+				url : "/service/addrbook/userAddress/deleteNew/"+userAddressId,
+				success: function(data){
+					if(data == "success"){
+						remind("删除成功");
+						$(".order_layer_iframe1").hide();
+						$(".content_dzcf").hide();
+					}else{
+						remind("删除失败");
+						$(".order_layer_iframe1").hide();
+						$(".content_dzcf").hide();
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+					//tipsDialog("服务器连接失败");
+				}
+			});
+		}
+	}
+	function markKeywordByColor(markStr,keyWord){
+		if(markStr==""||markStr==null||keyWord==""||keyWord==null){
+			return markStr;
+		}else {
+			var reg = new RegExp(keyWord, "ig");
+			var markedStr = markStr.replace(reg, '<i class="blue">'+keyWord+'</i>');
+			return markedStr;
+		}
+	}
+	
+	function remind(name){
+		$("#delIframe").text(name);
+		$(".order_layer_iframe2").show();
+		window.setTimeout(function(){
+			$(".order_layer_iframe2").hide();
+			location.reload();
+	    },"2000");
+		order_layer_iframe2_calculatePosition();
+	}
+	//#######################end#######################################
+	
+	//扫一扫下单
+	function scanPlaceOrder(){
+		jWeixin.scanQRCode({
+			needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+			scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+			success: function (res) {
+				var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+				var scanArray  =result.split(",");//判断是否条码 
+			}
+		});
+	};
+	function dispatchUrl(type){
+		window.location= '/weiwap/myScopeAndCouponList_new.html?type='+type;
+	}
+	//客服跳转
+	function customerservicedispatchUrl(){
+		window.location="http://sf-ocs.sf-express.com:8080/live800/chatClient/chatbox.jsp?companyID=8935&configID=18&skillId=17&enterurl=weixin";
+	};
+	function setWxConfig(){
+		var url = window.location.href;
+		var mm={};
+		mm.url=url;
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			data:mm,
+			cache: false,
+			url:"/service/weixin/querySignService",
+			success:function (wxConfig){
+				jWeixin.config({
+					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端remind出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId: wxConfig.appId, // 必填，公众号的唯一标识
+					timestamp: wxConfig.timestamp, // 必填，生成签名的时间戳
+					nonceStr: wxConfig.nonceStr, // 必填，生成签名的随机串
+					signature: wxConfig.signature,// 必填，签名，见附录1
+					jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline','onMenuShareWeibo'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+				});
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown){
+				
+			}
+		});
+
+     };
+     
+     /** 于2015年10月10日16:05:36 Added By sfit1108 微信地址分享功能 **/
+  	 // 显示微信右上角图标
+     document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+    	// 显示右上角图标
+     	WeixinJSBridge.call('showOptionMenu');
+     });
+
+     // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
+     document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+    	// 跳转至微信鉴权,鉴权成功后将重定向至分享提示信息页面
+   		var shareLink = window.location.origin + "/service/scan/gotoSharedHint";
+     	// 分享（发送）给好友
+     	WeixinJSBridge.on('menu:share:appmessage', function(argv) {
+     		// 超过5条
+     		if (unreasonable) {
+       			remind("分享链接不能超过5条!");
+       			return;
+       	 	}
+     		var shareData = shareObj.getAddrShareList();
+     		if (shareData && "" != shareData) {
+	     		// 获得分享链接
+	     		shareLink += "?" + shareData;
+	     		shareObj.shareFriend(shareLink); 
+     		}
+     		// 置空分享数据
+     		shareData = "";
+     	});
+     	// 分享到朋友圈
+    	WeixinJSBridge.on('menu:share:timeline', function(argv) {
+    		if (unreasonable) {
+       			remind("分享链接不能超过5条!");
+       			return;
+       	 	}
+     		var shareData = shareObj.getAddrShareList();
+     		if (shareData && "" != shareData) {
+	     		// 获得分享链接
+	     		shareLink += "?" + shareData;
+		    	// remind("分享链接:" + shareLink);
+	    		shareObj.shareTimeline(shareLink);
+     		}
+     		// 置空分享数据
+     		shareData = "";
+    	});
+    	// 分享到微博
+    	WeixinJSBridge.on('menu:share:weibo', function(argv) {
+    		if (unreasonable) {
+       			remind("分享链接不能超过5条!");
+       			return;
+       	 	}
+     		var shareData = shareObj.getAddrShareList();
+     		if (shareData && "" != shareData) {
+	     		// 获得分享链接
+	     		shareLink += "?" + shareData;
+		    	// remind("分享链接:" + shareLink);
+	    		shareObj.shareWeibo(shareLink);
+     		}
+     		// 置空分享数据
+     		shareData = "";
+    	});
+     }, false);
+     
+     // 分享参数对象 
+     var shareObj = {
+   		 appid : "UCMP",
+		 imgUrl : window.location.origin + "/images/customservice/mysf_log.jpg",
+		 lineLink : window.location.origin + "/weiwap/mysf/addrBook_share_hint.html",
+		 shareTitle : "顺丰速运地址薄分享",
+		 descContent : '您的好友分享了ta的地址，点击保存地址，在顺丰服务号寄件时可直接使用哦',
+		 dataUrl : window.location.origin + "/weiwap/mysf/MyMusic.mp3",
+    	 // 分享给朋友
+    	 shareFriend : function (shareLink) {
+    		// remind("执行shareFriend()...");
+   	     	// 发送给好友
+   	     	WeixinJSBridge.invoke('sendAppMessage',{
+   	     	    "appid": shareObj.appid,
+   	     	    "title": shareObj.shareTitle,	// 分享标题
+   	     	    "img_height": "200",			// 显示的图标尺寸	
+   	     	    "img_width": "200",		 		
+   	     	    "desc":  shareObj.descContent,	// 分享描述
+   	     	    "img_url": shareObj.imgUrl,		// 分享图标
+   	     	    "link": shareLink,				// 分享链接
+   	     	}, function(res) {
+   				// remind("分享地址给好友成功!");
+   				// alert(res.err_msg); // send_app_msg:cancel | send_app_msg:ok
+   				if ("send_app_msg:ok" == res.err_msg) {
+   					// alert("成功");
+	   				window.location.href = location.origin + "/weiwap/mysf/addrBook_share_success.html?sourcePage=sharing";
+   				} else {
+   					// alert("取消");
+   				}
+   	     	});
+   	     	// remind("执行shareFriend().，完毕!");
+   	     },
+    	 // 分享到朋友圈
+   	 	 shareTimeline : function(shareLink) {
+   	 		// remind("执行shareTimeline()");
+   	 		WeixinJSBridge.invoke('shareTimeline',{
+   	 		    "img_url": shareObj.imgUrl,
+   	 		    "img_width": "200",
+   	 		    "img_height": "200",
+   	 		    "link": shareLink,
+   	 		    "desc": shareObj.descContent,
+   	 		    "title": shareObj.shareTitle
+   	 		}, function(res) {
+   	 			// remind("分享地址到朋友圈成功!");
+   	 			// alert(res.err_msg); // share_timeline:ok | share_timeline:cancel
+   	 			if ("share_timeline:ok" == res.err_msg) {
+					// alert("成功！");
+					window.location.href = location.origin + "/weiwap/mysf/addrBook_share_success.html?sourcePage=sharing";
+   	 			} else {
+					// alert("取消！");
+   	 			}
+   	 		});
+   	 	 },
+   		 // 分享到微博
+   	 	 shareWeibo : function(shareLink) {
+   	 		// remind("执行shareWeibo()");
+   	 		WeixinJSBridge.invoke('shareWeibo',{
+   	 		    "content": shareObj.title + ' ' + shareObj.descContent,
+   	 		    "url": shareLink,
+   	 		}, function(res) {
+   	 			// remind("分享地址到微博成功!");
+   	 			// alert(res.err_msg); // share_weibo:ok | share_weibo:cancel
+				window.location.href = location.origin + "/weiwap/mysf/addrBook_share_success.html?sourcePage=sharing";
+   	 		});
+   	 	 },
+    	 // 获得选中的地址数组
+    	 getAddrShareList : function() {
+    		 if (!selectAddr || "" == selectAddr) {
+    			 tipsDialog("请选择地址数据!");
+    			 return false;
+    		 } 
+       		 // 把用户选中地址的下标字条串进行分割
+   	    	 var selectedAddress = selectAddr.split(",");
+       		 // 对用户重复选择的地址下标数组去重
+       		 selectedAddress = shareObj.distinctArray(selectedAddress);
+       		 // 存储待分享的地址
+   			 var memNo = "", addrIds = "";
+   	 		 for(i = 0; i < selectedAddress.length; i++){
+   	 			// 每次分享的地址不能超过5条
+   	 			if (i > 2) {
+   	 				// tipsDialog("每次分享的地址不能超过5条");
+   	 				tipsDialog("每次分享的地址不能超过2条");
+   	 				return false;
+   	 			}
+   	 			var index = selectedAddress[i];
+ 				// 通过下标查询出地址信息
+ 				var addr = useAddressBook_query[index];
+   	 			// 将选中地址暂存其关键信息（memNo,key）
+   	 			memNo = addr.memNo;
+   	 			// 默认为十进制 ,去掉0开头的字符
+ 				memNo = parseInt(memNo).toString();
+   	 			// 将memNo转换为 16 进制存储
+   	 			if (memNo.length < 21) {
+	   	 			// 超过 21 位转码以科学计数法
+   	 				memNo = parseInt(memNo).toString(16);
+   	 			} else {
+   	 				// 超过 21 位时以十进制传输
+   	 			}
+   	 			addrIds += addr.addressId + ","; 
+   	 		 }
+   	 		 // 将关键信息拼接成串
+   	 		 return "key=" + memNo + "_" + addrIds.substring(0, addrIds.length - 1);
+     	 },
+     	 // 数组数据去重
+     	 distinctArray : function(arr) {
+     		var res = [];
+     		var obj = {};
+     		for(var i = 0; i < arr.length; i++){
+     			if(!obj[arr[i]]){
+     		   		res.push(arr[i]);
+     		   		obj[arr[i]] = 1;
+     		  	}
+     		}
+     		return res;
+     	 }
+     };
+     // 用户分享成功后收到分享对象，相关属性
+     var receiveSharedObj = {
+		 // 如果是为分享页面跳转进来的，则展示方式改变
+       	 showSharedAddressBook : function() {
+       		//查询锁判断 off为正在查询，on为已查询过
+       		if(addressBookQueryLock=="off"){
+       			return;
+       		}
+       		addressBookQueryLock="off";
+       		// 获取URL中的查询条件参数
+      		var memNo = getParameter("memNo");
+      		var addrIds = getParameter("addrIds");
+      		if (memNo && "" != memNo && addrIds && "" != addrIds) {
+      			var memNoLen = memNo.length;
+      			// 将 16 进制的会员号进制转换为 10 进制 
+      			if (memNoLen < 21) {
+	      			// 恢复会员为 十 进制 编码 
+      				memNo = parseInt(memNo, 16).toString();
+	      			// 不足21位的为16进制码
+      				memNoLen = memNo.length;
+      			} else {
+      				// 超过 21 位的本为 十进制 
+      			}
+      			for (var i = 32; i > memNoLen; i--) {
+      				memNo = "0" + memNo;
+      			}
+      			$.ajax({
+      				type : "GET",
+      				dataType : "json",
+      				url : "/service/addrbook/userAddress/showSharedAddrs",
+      				data: {"memNo" : memNo, "addrIds" : addrIds},
+       				success: function(date){	
+  	     				if(date!=null&&date.status=="1"&&date.result!=null&&date.result.page!=null){
+  	     					var pageNo=date.result.page.currentPage;
+  	     					couponPageNo =  parseInt(pageNo);
+  	     					couponTotalPage = parseInt(date.result.page.totalPage);
+  	     					addressTotalCount = parseInt(date.result.page.totalCount);
+  	     					if(date.result.addressList instanceof Array && date.result.addressList.length>0){
+  	     						var json = date.result.addressList;
+  	     						var recordLength = date.result.addressList.length;//此次查询返回的地址记录数
+  	     						addressAllCount = parseInt(addressAllCount) + parseInt(recordLength);
+  	     						var domStr = ''; //查询结果组装DOM
+  	     						var toShareDom = ''; // 同时放入共享DOM
+  	     						for(var i=0; i<json.length; i++){
+  	     				    	  //把每次 查询出的地址数据存放在全局变量里
+  	     						  var index = 	Number(couponPageNo-1)*Number(pageSize)+i;
+  	     				    	  useAddressBook_query[index] = json[i];
+  	     				    	  //**************
+  	     							var mobile=json[i].mobile;
+  	     							if(mobile==""||mobile==null){
+  	     								mobile=json[i].phone;
+  	     								if ((json[i].addrssId == null || json[i].addrssId == "") && (json[i].contractName == null || json[i].contractName == "")) {
+  	     									continue;
+  	     								}
+  	     							}
+  	     							if(couponPageNo==1&&i==0&&json[i].addressType=="S"){
+  	     								domStr += '<dl id="oneDl" class="contacts address_box current clearfix" onclick="chooseOneAddress('+index+',this)">';
+  	     								toShareDom += '<dl class="contacts address_box current clearfix">';
+  	     							}else{
+  	     								if(editAddressFlag == 1){
+  	     									domStr += '<dl class="contacts address_box clearfix" onclick="chooseOneAddress('+index+',this)">';
+  	     								}else{
+  	     									domStr += '<dl class="contacts address_box arrow clearfix" onclick="chooseOneAddress('+index+',this)">';
+  	     								}
+  	     								toShareDom += '<dl class="contacts address_box clearfix">';
+  	     							}
+  	     							domStr +='<dt><span>'+json[i].contractName+'</span><span style="padding-left:45px;" class="tel">'+mobile+'</span></dt>';
+  	     							domStr +='<dd class="address">'+json[i].provinceName+json[i].cityName+json[i].countyName+'<br>'+json[i].address+'</dd>';
+  	     							toShareDom +='<dt><span>'+json[i].contractName+'</span><span style="padding-left:45px;" class="tel">'+mobile+'</span></dt>';
+  	     							toShareDom +='<dd class="address">'+json[i].provinceName+json[i].cityName+json[i].countyName+'<br>'+json[i].address+'</dd>';
+  	     							if(editAddressFlag == 1){
+  	     								domStr +='<dd class="change_url a" style="display: none;"><a href="javascript:updateAddress('+index+',this)">&nbsp;</a></dd>';
+  	     								domStr +='<dd class="change_url b" style="display: block;" onclick="checkBox('+index+',this)"><div class="chk-checkbox" id="checkBoxId'+index+'"><a href="#">&nbsp;</a></div></dd>';
+  	     							}else{
+  	     								domStr +='<dd class="change_url a" style="display: block;" ><a href="javascript:updateAddress('+index+',this)">&nbsp;</a></dd>';
+  	     								domStr +='<dd class="change_url b" style="display: none;" onclick="checkBox('+index+',this)"><div class="chk-checkbox" id="checkBoxId'+index+'"><a href="#">&nbsp;</a></div></dd>';
+  	     							}							
+  	     							domStr +='</dl>';
+  	     							toShareDom += '<dd class="change_url"><div class="chk-checkbox"><span></span></div></dd></dl>';
+  	     						}
+  	     						$("#address_query_content").append(domStr);
+  	     					}
+  	     					addressBookQueryLock ="on";
+  	     					$("#address_loading").hide();
+  	     					$("#address_load_error").hide();
+  	     					//首次查询无数据提示信息数据没有了  
+  	     					if(couponPageNo==1&&(couponTotalPage==0||couponTotalPage==1)){
+  	     						$("#address_load_nodata").show();
+  	     					}else{
+  	     						$("#address_load_more").show();
+  	     					}
+  	     				}else{
+  	     					addressBookQueryLock ="on";
+  	     					$("#address_loading").hide();
+  	     					$("#address_load_error").hide();
+  	     					//首次查询无数据提示信息数据没有了  
+  	     					if(couponPageNo==1&&(couponTotalPage==0||couponTotalPage==1)){
+  	     						$("#address_load_nodata").show();
+  	     					}else{
+  	     						$("#address_load_more").show();
+  	     					}
+  	     				}
+  	     			},
+  	     			error:function(XMLHttpRequest, textStatus, errorThrown){
+  	     				addressBookQueryLock ="on";
+  	     				$("#address_loading").hide();
+  	     				$("#address_load_error").fadeIn();
+  	     				window.setTimeout(function(){
+  	     					$("#address_load_error").fadeOut(1000);
+  	     					$("#address_load_more").show();
+  	     			   },1500);
+  	     			}
+   				});
+       		};
+  			// 地址不可编辑,复选框按钮显示 
+  			editAddressFlag=1;
+  			$(".contacts.address_box").removeClass().addClass("contacts address_box clearfix");
+  			$("#oneDl").removeClass().addClass("contacts address_box current clearfix");
+  			$(".change_url.b").show();//每个地址的编辑图标显示
+  			$(".change_url.a").hide();//原状态隐藏
+  			
+  			$("#tools_address_share_success").show();//地址编辑工具栏显示
+  			$("#tools_address_select").hide();//地址选择工具栏隐藏
+       	 },
+       	 // 保存分享过来的选中的地址
+       	 saveSharedAddress : function () {
+       		if (!selectAddr || "" == selectAddr) {
+       			remind("请选择需要保存的地址!");
+       			return false;
+       		}
+       		// 把用户选中地址的下标字条串进行分割
+   	    	var selectedAddress = selectAddr.split(",");
+       		// 对用户重复选择的地址下标数组去重
+       		selectedAddress = shareObj.distinctArray(selectedAddress);
+       		// 存储待存储地址
+       		var waitSavedAddrs = [];
+            // 存储用户分享数据后保存失败的提示信息 
+            var errorMsg = "";
+            var errorFlag = 0;
+            var flag = 0;
+       		// 遍历出待存储的地址对象 
+   	 		for(i = 0; i < selectedAddress.length; i++){
+   	 			var index = selectedAddress[i];
+ 				// 通过下标查询出地址详细信息
+ 				var addr = useAddressBook_query[index];
+ 				// 将地址对象转换同时 ID值赋空
+ 				addr = receiveSharedObj.parseAddr2Json(addr);
+ 				errorFlag = receiveSharedObj.saveAddrJson(addr);
+ 				if ("1" == errorFlag) {
+ 					flag ++;
+ 				} else {
+ 					errorMsg += errorFlag + " ";
+ 				}
+ 				// 将地址保存到地址数组中
+ 				// waitSavedAddrs.push(addr);
+   	 		}
+       		// receiveSharedObj.executeSaveAddrs(waitSavedAddrs);
+       		if (flag == selectedAddress.length) {
+	  			// 保存成功，跳转至地址接收成功页面 
+	  			tipsDialog("保存地址薄成功");
+       		} else {
+       			if (errorMsg) {
+	       			tipsDialog("保存失败，原因：" + errorMsg);
+		   			localStorage.setItem("sharedError", errorMsg);
+		   			localStorage.setItem("sharedPath", window.location.href);
+       			} else {
+	       			tipsDialog("地址保存失败，请稍后再试");
+	       			return;
+       			}
+       		}
+       		window.location.href = location.origin + "/weiwap/mysf/addrBook_share_success.html?sourcePage=receiveShared";
+       	 },
+       	 // 执行保存地址（不建议使用 ）
+       	 executeSaveAddrs : function(waitSavedAddrs) {
+    		$.ajax({
+	    		type : "POST",
+	    		data : waitSavedAddrs,
+	    		dataType : "json",
+	    		url : "/service/addrbook/userAddress/saveSharedAddress",
+	    		success: function(date){
+	    			if(date.status == "0"){
+	    				var mess = "";
+	    				if(date.message != null){
+	    					mess = ",原因：" + date.message;
+	    				}
+	    				// tips("保存地址薄信息失败" + mess);
+	    				remind("保存地址薄信息失败" + mess);
+	    				return false;
+	    			}else{
+	    				// location.reload();
+	    				return true;
+	    			}
+	    		},
+	    		error:function(XMLHttpRequest, textStatus, errorThrown){
+	    		}
+	    	});
+       	 },
+       	 // 把地址对象转换为json数据
+     	 parseAddr2Json : function(address) {
+     		if (address && "" != address) {
+	     		var addrJson = {};
+	        	addrJson.addressId = "";								// 将ID置空
+	     		addrJson.postCode = address.postCode;
+	     		addrJson.companyName = address.companyName;
+	        	addrJson.isDefault = false;								// [必填,保持使用地址原样]
+	     		addrJson.address = address.address;						// 西乡社区1234号[详细地址]
+	     		addrJson.addressType = address.addressType;				// S寄件人地址,R收件人地址
+	     		addrJson.cityId = address.cityId;						// 755[必填]
+	     		addrJson.cityName = address.cityName;					// 深圳市[必填]
+	     		addrJson.contractName = address.contractName;			// 孔为佳[必填]
+	     		addrJson.countryName = address.countryName;				// 中国[写死]
+	     		addrJson.countyId = address.countyId;					// 宝安区[必填]
+	     		addrJson.countyName = address.countyName;				// 宝安区[必填]
+	     		addrJson.groupName = address.groupName;					// 同学 同事
+	     		addrJson.mobile = address.mobile;						// 15013553621[必填,手机号码]
+	     		addrJson.phone = address.phone;							// [不知道是个啥反正没有填]	
+	     		addrJson.provinceName = address.provinceName;			// 广东 [必填]
+	     		addrJson.provinceId = address.provinceId;				// 440 [必填]
+	     		addrJson.countryCode = address.countryCode;
+	     		addrJson.langCode = address.langCode;
+	     		addrJson.mediaCode = address.mediaCode;
+	     		addrJson.groupId = address.groupId;
+	     		addrJson.keyword = address.keyword;
+	     		addrJson.systemCode = address.systemCode;
+	     		return addrJson;
+     		}
+     	 },
+     	 // 保存单个json格式的地址
+     	 saveAddrJson : function(addr){
+     		// 错误信息对象
+     		if (!addr || "" == addr) {
+     			return "未选中待保存地址";
+     		} 
+     		var errMsg = "";
+         	$.ajax({
+         		type : "POST",
+         		data : addr,
+         		async : false,
+         		dataType : "json",
+         		url : "/service/addrbook/userAddress/saveNew",
+         		success: function(data){
+         			if(data.status == "0"){
+         				var mess = "", errorMsg;
+         				if(data.message != null){
+         					mess = ",原因：" + data.message;
+         					errorMsg = "的" + data.message;
+         					if ("地址重复" == data.message) {
+         						localStorage.setItem("addrRepeat", data.message);
+         					}
+         				}
+         				// remind("保存地址薄信息失败" + mess);
+         				errMsg = addr.contractName + errorMsg;
+         			}else{
+         				// remind("保存成功");
+         				errMsg = 1;
+         			}
+         		},
+         		error:function(XMLHttpRequest, textStatus, errorThrown){
+         		}
+         	});
+         	return errMsg;
+         },
+         // 全选好友分享过来的地址
+         selAllSharedAddr : function() {
+        	 selectAll();
+         },
+         // 用户接收分享过来的的数据，先执行查看用户是否已登录。如未登录则引导其进行登录（注册）
+     };
+	
+	 function shareFun(){
+		 $("#content_share").show();
+		$("#divShare").show();
+		var layer_iframe_height = ($("#divShare").height())/2;
+    	var layer_iframe_width = ($("#divShare").width())/2;
+    	$("#divShare").css({"margin-top":-layer_iframe_height,"margin-left":-layer_iframe_width});
+		$("i.close").css("display","block");
+	 }
+	 
+	 function unique(arr,removeAll){
+	    arr.sort(function(a,b){return a-b});//先排序
+	    var s=arr.join(',')+',';
+	    arr= s.replace(/(\d+,)\1+/g,removeAll?'':'$1').replace(/,$/,'').split(',');
+	    for(var i=0;i<arr.length;i++)arr[i]=parseInt(arr[i],10);//重新转为数字
+	    return arr
+	}
+</script>
+</html>
+

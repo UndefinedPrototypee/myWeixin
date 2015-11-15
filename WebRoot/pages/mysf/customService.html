@@ -1,0 +1,333 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>通关服务</title>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+<link rel="stylesheet" type="text/css"   href="/css/sc/weiwap/blackDialogs.css" />
+<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script></head>
+<script type="text/javascript" src="/js/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/js/jweixin-1.0.0.js"></script>
+<!-- <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
+<script type="text/javascript">
+//百度SEO统计
+var _hmt = _hmt || [];
+(function() {
+	var hm = document.createElement("script");
+  	hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+  	var s = document.getElementsByTagName("script")[0]; 
+  	s.parentNode.insertBefore(hm, s);
+})();
+// 页面加载
+$(document).ready(function(){
+	// 手机号、密码登录标签页切换
+	$(".customService li span.Left").tabs(".customService li dl", { event: 'click' }); 
+	// 微信配置初始化
+	custServObj.wxInit();
+});
+</script>
+
+<body>
+
+<div class="order mysf clearfix">
+	<h5 class="index_title clearfix">快递运单号</h5>
+	<ul class="newsAddress clearfix">
+		<li class="clearfix"><p>运单号</p><span class="Left">
+		<input id="waybillNo" type="number" placeholder="请输入运单号" value=""></span></li>
+	</ul>
+	<h5 class="index_title clearfix">身份证明信息</h5>
+	<ul class="newsAddress customService clearfix">
+		<li class="first clearfix">
+			<p>证件类型</p>
+			<span class="Left">
+				<p class="current"><i>身份证</i><input type="text" style="display:none;" value="1"></p>
+				<p><i>护照</i><input type="text" style="display:none;" value="2"></p>
+				<p><i>其他</i><input type="text" style="display:none;" value="3"></p>
+			</span>
+		</li>
+		<li class="content clearfix">
+			<dl class="clearfix">
+				<dd class="first">
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span>
+					<input type="file" class="hide">
+					<p>身份证正面</p>
+				</dd>
+				<dd>	
+					<!-- <span onclick="$(this).next().click()"> -->
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span>
+					<input type="file" class="hide">
+					<p>身份证背面</p>
+				</dd>
+			</dl>
+			<dl class="clearfix">
+				<dd class="first">
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span>
+					<input type="file" class="hide"><p>护照正面</p>
+				</dd>
+				<dd>
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span><input type="file" class="hide"><p>护照背面</p>
+				</dd>
+			</dl>
+			<dl class="clearfix">
+				<dd class="first">
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span>
+					<input type="file" class="hide"><p>其它证件正面</p>
+				</dd>
+				<dd>
+					<span onclick="custServObj.chooseCertificate(this);">
+						<img src="/images/customservice/upload_icon.png" width="44" height="44">
+					</span><input type="file" class="hide"><p>其它证件背面</p>
+				</dd>
+			</dl>
+		</li>
+	</ul>
+	
+	<div class="customService_prompt">
+		<p>温馨提示：</p>
+		<p>1、为确保快件顺利通关，请上传真实有效的身份信息；</p>
+		<p>2、中国大陆居民：居民身份证或临时居民身份证；</p>
+		<p>3、港澳居民：港澳居民往来内地通行证（回乡证）；</p>
+		<p>4、台湾居民：台湾居民来往大陆通行证（台胞证）；</p>
+		<p>5、外国公民：护照；</p>
+		<p>6、其他证件（如军官照、士兵证、士官证、武装警察身份证件等）；</p>
+		<p>7、正反面图片要求大小不超过300KB，尺寸为420*280，格式为"jpg"。</p>
+	</div>
+	
+	<!-- 底部占位 -->
+	<div class="order_bottom_placeholder"></div>
+
+	<!-- 底部提交按钮层 -->
+	<dl class="order_submit special clearfix">
+		<dt>
+			<a class="close Left" href="/weiwap/mysf/index-mysf.html">取消</a>
+		</dt>
+		<dd>
+			<a class="btn Right current" id="js_content_dzcf" href="javascript:custServObj.doSubmit();">提 交</a>
+			<!-- +"current":可点 -->
+		</dd>
+	</dl>
+</div>
+
+<!-- 2015年10月23日10:39:02 sfit1108 添加相关功能JS  -->
+<script type="text/javascript">
+// config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+wx.error(function(res){
+	tipsDialog("微信配置失败！，失败原因：" + res.errMsg);
+});
+// 证件正面
+var images = {
+    localId: [],
+	serverId: []
+};
+// 证件背面
+var imagesF = {
+    localId: [],
+    serverId: []
+};
+// 通关功能对象相关属性 
+var custServObj = {
+	// 微信初始化配置
+	wxInit : function(){
+		// // alert("微信初始化配置中...");
+		var mm = {};
+		mm.url = window.location.href;
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			data:mm,
+			cache: false,
+			url:"/service/weixin/querySignService",
+			success:function (wxConfig){
+				// tipsDialog("...微信配置信息查询成功...");
+				jWeixin.config({
+				    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端// alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				    appId: wxConfig.appId, // 必填，公众号的唯一标识
+				    timestamp: wxConfig.timestamp, // 必填，生成签名的时间戳
+				    nonceStr: wxConfig.nonceStr, // 必填，生成签名的随机串
+				    signature: wxConfig.signature,// 必填，签名，见附录1
+					jsApiList: ['chooseImage','previewImage','uploadImage','downloadImage'] // 必填，需要使用的JS接口列表
+				});
+				jWeixin.ready(function() {
+					// alert("...微信配置成功!");
+				});
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+			}
+		});
+	},
+	// 选中证件 （正面,反面）
+	chooseCertificate : function(ele) {
+		var isCardFront = $(ele).parent(".first");
+		// 判断点击对象是下面还是背面
+		if (isCardFront && isCardFront.length > 0) {
+			// tipsDialog("选择正面...");
+			isCardFront = true;
+		} else {
+			// tipsDialog("选择反面...");
+			isCardFront = false;
+		}
+		// 调用微信上传图片接口 
+		wx.chooseImage({
+		    success: function (res) {
+		    	// tipsDialog("微信上传图片接口调用成功");
+		    	// 修改图片上传后的路径 
+				$(ele).children("img").attr("src", res.localIds);
+		    	if (isCardFront) {
+			        images.localId = res.localIds;
+			        // tipsDialog("选择正面-->成功");
+		    	} else {
+		    		imagesF.localId = res.localIds;
+		    		// tipsDialog("选择背面-->成功");
+		    	}
+		    }
+	   });
+	},
+	// 提交按钮 
+	doSubmit : function() {
+		// debugger;
+		// 运单号
+		var waybillNo = $("#waybillNo").val();
+		// 证件类型 【 证件类型（默认为：身份证[1]; 护照[2]; 其它[3]）】
+		var zjlx = $("p.current>input").val();
+		
+		if (!/^[0-9]{12}$/.test(waybillNo)) {
+			tipsDialog("请填写12位数字的运单号");
+			return false;
+		}
+		if(images.localId == "" || images.localId == null){
+			tipsDialog("请选择上传的图片正面");
+			return false;
+		}
+		if(imagesF.localId == "" || imagesF.localId == null){
+			tipsDialog("请选择上传的图片背面");
+			return false;
+		}
+		//上传身份证正面图片到腾讯图片服务器  上传成功之后执行后续操作
+		this.uploadImage(waybillNo, zjlx);
+	},
+	// 执行图片上传操作 （证件正面）
+	uploadImage : function(waybillNo, zjlx) {
+	    var i = 0, length = images.localId.length;
+	    images.serverId = [];
+	    // 调用上传upload()函数 
+	    upload();
+	    // 内部申明函数 
+	    function upload() {
+	    	// alert("上传正面");
+	    	wx.uploadImage({
+	        	localId: images.localId[i],
+	        	success: function (res) {
+	          		i++;
+	          		images.serverId.push(res.serverId);
+					if (i < length) {
+					    upload();
+					}
+					if(images.serverId == "" || images.serverId == null){
+						// alert("images.serverId null");
+						return false;
+				 	}
+		      		// 上传身份证反面图片到腾讯图片服务器  上传成功之后进行数据处理
+		      		custServObj.uploadImageF(waybillNo, zjlx);
+	        	},
+	        	fail: function (res) {
+	          		// alert(JSON.stringify(res));
+	        	}
+	      	});
+	    }
+	},	
+	// 执行证件图片上传（背面上传）
+	uploadImageF : function(waybillNo, zjlx){
+		// alert("上传背面");
+		var i = 0, length = imagesF.localId.length;
+	    imagesF.serverId = [];
+	    // 执行内部upload()方法
+	    upload();
+	    // 声明upload()方法 
+	    function upload() {
+	      	wx.uploadImage({
+		        localId: imagesF.localId[i],
+		        success: function (res) {
+		        	i++;
+		        	imagesF.serverId.push(res.serverId);
+		          	if (i < length) {
+		            	upload();
+		          	}
+		          	if(imagesF.serverId == "" || imagesF.serverId == null){
+		        	 	// alert("imagesF.serverId null");
+		        	 	return false;
+		          	}
+		          	// 执行通关验证操作
+		          	custServObj.executeCource(waybillNo, zjlx);
+				},
+		        fail: function (res) {
+		          	// alert(JSON.stringify(res));
+		        }
+			});
+		}
+	},
+	// 执行通关验证操作
+	executeCource : function(waybillNo, zjlx) {
+		// alert("执行通关操作");
+		var mm = {};
+    	mm.waybillNo = encodeURI(encodeURI(waybillNo));
+		mm.zjlx = encodeURI(encodeURI(zjlx));
+    	mm.serverId = encodeURI(encodeURI(images.serverId));
+    	mm.serverIdF = encodeURI(encodeURI(imagesF.serverId));
+    	mm.localId = encodeURI(encodeURI(images.localId));
+    	mm.localIdF = encodeURI(encodeURI(imagesF.localId));
+    	// alert("mm~运单号:" + mm.waybillNo + ",类型：" + mm.zjlx + ",正面服务器ID：" + mm.serverId + ",背面服务器ID：" + mm.serverIdF + ",正面ID：" + mm.localId + ",背面ID：" + mm.localIdF);
+    	$.ajax({
+    		type : "POST",
+    		dataType : "json",
+    		data:mm,
+    		url : "/service/overseas/sendPassCustomsInfo",
+    		success : function(res) {
+   				if (res.msg == "success") {
+   					// alert("报关数据处理成功");
+   					window.location.href = location.origin + "/weiwap/mysf/customservice/custServiceSuccess.html";
+   				}else if(res.msg == "false"){
+   					alert("报关数据处理失败");
+   				}else if(res.msg =="sendError"){
+   					alert("报关数据处理异常");
+   				}else{
+   					alert("报送数据处理失败，原因：" + res.msg);
+   				}
+    		},
+    		error : function(XMLHttpRequest, textStatus, errorThrown) {
+    		}
+    	});
+    	// alert("执行通关任务完毕");
+	}
+};
+// 提示对话框 
+function tipsDialog(content){
+	var $dialog = $('<div class="dialog-tips" style="text-align:center; color:red;"></div>');
+	var $content = $('<div class="content"></div>');
+	$content.html(content);
+	$dialog.append($content);
+	$("ul.newsAddress.clearfix:first").append($dialog);		
+	var windowWidth = $(window).width();   
+	var windowHeight = $(window).height();  
+	var popupHeight = $dialog.height();   
+	var popupWidth = $dialog.width();
+	var top = (windowHeight-popupHeight)/2;
+	$dialog.css({"top": top}).fadeIn(500);		
+	setTimeout(function () {
+		$dialog.fadeOut(3000);
+	}, 1100);
+}
+</script>
+<script type="text/javascript" src="/js/common.js"></script>
+</body>
+</html>

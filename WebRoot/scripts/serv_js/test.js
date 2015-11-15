@@ -1,16 +1,28 @@
 define(['jquery', 'jutil'], function($, JU) {
+	var go = function() {
+		console.log("Go go go a la a la  a la...");
+	};
+	
+	function move() {
+		console.info("Move Move Move .now ");
+	}
+	
 	return {
 		helloRequireJs : function() {
-			alert("My First RequireJS ... ");
+			debugger;
+			console.info("My First RequireJS ... ");
+			this.say();
+			go();
+			move();
 		}, 
 		hello : function () {
-			alert("Say Hello to World");
+			console.info("Say Hello to World");
 		},
 		say : function () {
-			alert("I Fall in Love With You in the First Sight !");
+			console.info("I Fall in Love With You in the First Sight !");
 		},
 		seeJQuery : function () {
-			alert("$符号代表:" + $);
+			console.info("$符号代表:" + $);
 		}
 	}
 });
