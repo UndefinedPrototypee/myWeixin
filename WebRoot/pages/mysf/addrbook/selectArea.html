@@ -1,0 +1,567 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>选择地址-选择省市区</title>
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/style.css">
+<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/orderPlusNewaddress/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/orderPlusNewaddress/adressVaguePlus.js"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+
+<body>
+<div class="order clearfix">
+	<ul class="order_tools absolute clearfix">
+		<div id="div1" style="display:inline;">
+			<li class="clearfix">
+				<div class="Left"><a class="btn" href="javascript:;" onclick="closeWindow()">取消</a></div>
+				<div class="center"><a class="btn search" href="javascript:;" onclick="openSubDiv()">&nbsp;</a></div>
+				<div class="Right"><a class="btn" href="javascript:;" onclick="closeWindow()">完成</a></div>
+			</li>
+		</div>
+		<div id="div2" style="display:none;">
+			<li class="clearfix">
+				<div class="search_box">
+						<input class="search_input" type="text" value="" id="project" value=""  onkeydown="keydown(event)" onkeyup="keyUp()" oninput="cleanNumShow()">
+						<em class="clearBtnaddress" style="display:none;" id="cleanNum" onclick="cleanuserAddress()"></em>
+					
+					<input class="search_btn" id="user_show_all" name="" type="button" value="">
+					<i onclick="del()"></i>
+				</div>
+				<a class="btn" href="javascript:;" onclick="closeSubDiv()">取消</a>
+			</li>
+			<li>
+           		<div id="result1" name="result1"></div>
+			</li>
+		</div>
+	</ul>
+	<div style="height:4.5rem"></div>
+	<ul class="position clearfix"><li><a href="javascript:;" onclick="prOpt()" id="prOpt">热门城市</a></li><li><a href="javascript:;" id="cityOpt">北京</a></li></ul>
+	<dl class="order_area clearfix">
+		<dt>
+			<ul id="provinceData">
+			</ul>
+			<ul id="cityData2">			
+			</ul>
+		</dt>
+		<dd>
+			<ul id="hotCityData">			
+			</ul>
+			<ul id="cityData">			
+			</ul>
+			<ul id="areaData">			
+			</ul>
+		</dd>
+	</dl>
+
+</div>
+<div id="div3" class="order_layer_shade" style="display:none;"></div><!-- 遮罩弹出层 -->
+</body>
+<script type="text/javascript">
+var weixin_order_pram = {};
+var address_data = {};
+var parentWin = window.opener;
+$(document).ready(function(){
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		url : "/service/address/data/province",
+		success: function(json){
+			//排序热点城市
+			var temp = json.hotCityData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.hotCityData = temp;
+			
+			//排序
+			var temp = json.provinceData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.provinceData = temp;
+			//设置热点城市和省
+			div_display("hotCityData",weixin_order_pram.hotCityData);
+			div_display("provinceData",weixin_order_pram.provinceData);
+			$("li:contains(热门城市)").addClass("current");
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});	
+});
+
+/**
+ * 根据不同的id[省市区],来设置设置其中的类容.
+ */
+function div_display(div_id,jsonList){
+	var ms = "";
+	var strHtml = '';
+	if(div_id == "hotCityData"){
+		ms = '"hotTotw(\'';
+	}
+	if(div_id == "provinceData"){
+		strHtml = '<li onclick="hotcitys()"><a href="javascript:void(0)">热门城市</a></li>';
+		ms = '"prToct(\'';
+	}
+	if(div_id == "cityData" || div_id == "cityData2"){
+		ms = '"ctTotw(\'';
+	}
+	if(div_id == "areaData"){
+		ms = '"twToroot(\'';
+	}
+	$(jsonList).each(function(){
+		strHtml = strHtml + '<li onclick='+ms+this.name+'\')" ><a href="javascript:void(0)">'+this.name+'</a></li>';
+	});
+	$("#"+div_id).html(strHtml);
+}
+
+function hotcitys(){
+	$("li").removeClass("current");
+	$("#prOpt").text("热门城市");
+	$("#cityData").empty();
+	$("li:contains(热门城市)").addClass("current");
+	cityname = weixin_order_pram.hotCityData[0].name;
+	div_display("hotCityData",weixin_order_pram.hotCityData);
+	$("#cityOpt").text(cityname);
+}
+/**
+ * hot页面点击选择热点城市
+ */
+function hotTotw(name){
+	$("li").removeClass("current");
+	$("#prOpt").text("热门城市");
+	$("#cityOpt").text(name);
+	//清空区的数据
+	$("#areaData").empty();
+	$("#provinceData").empty();
+	$("#hotCityData").empty();
+	//确定省市
+	weixin_order_pram.cityData = null;
+	$(weixin_order_pram.hotCityData).each(function(){
+		if(this.name == name){
+			var strArray = this.parentId.split("/");
+			weixin_order_pram.temppr = {name:strArray[1],id:strArray[0]};
+			weixin_order_pram.tempct = {name:this.name,id:this.cityCode};
+		}
+	});
+	//根据点击的市的id查询区,构造选择区页面
+	var parentId = weixin_order_pram.tempct.id+"/"+weixin_order_pram.tempct.name;
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		data:{
+			parentId: encodeURI(parentId)
+		},
+		url : "/service/address/data/area",
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		success: function(json){
+			var temp = json.areaData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.areaData = temp;
+			div_display("cityData2",weixin_order_pram.hotCityData);
+			$("li:contains('"+name+"')").addClass("current");
+			div_display("areaData",temp);
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});
+}
+
+/**
+ * 选择省页面点击一个省
+ */
+function prToct(name){
+	$("li").removeClass("current");
+	$("#prOpt").text(name);
+	//清空市的数据
+	$("#cityData").empty();
+	$("#hotCityData").empty();
+	//确定省
+	$(weixin_order_pram.provinceData).each(function(){
+		if(this.name == name){
+			weixin_order_pram.temppr = {name:this.name,id:this.id};
+		}
+	});
+	//根据点击的省的id查询区,构造选择市页面
+	var parentId = weixin_order_pram.temppr.id+"/"+weixin_order_pram.temppr.name;
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		data:{
+			parentId: encodeURI(parentId)
+		},
+		url : "/service/address/data/city",
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		success: function(json){
+			var temp = json.cityData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.cityData = temp;
+			div_display("cityData",temp);
+			$("li:contains('"+name+"')").addClass("current");
+			var cityname = temp[0].name;
+			$("#cityOpt").text(cityname);
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});
+}
+
+/**
+ * 选择城市页面点击一个城市
+ */
+function ctTotw(name){
+	$("li").removeClass("current");
+	$("#cityOpt").text(name);
+	//清空区的数据
+	$("#areaData").empty();
+	$("#provinceData").empty();
+	$("#cityData").empty();
+	if(weixin_order_pram.cityData == null){
+		$(weixin_order_pram.hotCityData).each(function(){
+			if(this.name == name){
+				var strArray = this.parentId.split("/");
+				weixin_order_pram.temppr = {name:strArray[1],id:strArray[0]};
+				weixin_order_pram.tempct = {name:this.name,id:this.cityCode};
+			}
+		});
+	}else{
+		$(weixin_order_pram.cityData).each(function(){
+			if(this.name == name){
+				weixin_order_pram.tempct = {name:this.name,id:this.id};
+			}
+		});
+	}
+	//根据点击的市的id查询区,构造选择区页面
+	var parentId = weixin_order_pram.tempct.id+"/"+weixin_order_pram.tempct.name;
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		data:{
+			parentId: encodeURI(parentId)
+		},
+		url : "/service/address/data/area",
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		success: function(json){
+			var temp = json.areaData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.areaData = temp;
+			if(weixin_order_pram.cityData != null){
+				div_display("cityData2",weixin_order_pram.cityData);
+			}
+			$("li:contains('"+name+"')").addClass("current");
+			div_display("areaData",temp);
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});
+}
+
+/**
+ * 在选择区的页面点击一个区
+ */
+function twToroot(name){
+	//确定区
+	$(weixin_order_pram.areaData).each(function(){
+		if(this.name == name){
+			weixin_order_pram.temptw = {name:this.name,id:this.id};
+		}
+	});
+	//root页面地址显示改变
+	var areaName = weixin_order_pram.temppr.name + " " + weixin_order_pram.tempct.name + " " + weixin_order_pram.temptw.name;
+//	parentWin.getArea(areaName,weixin_order_pram);
+	
+	 window.parent.showNewAddressFromSelectArea(weixin_order_pram);
+	//返回页面清空
+	weixin_order_pram.backId = new Array();
+//	window.close();
+}
+
+
+function prOpt(){
+	var cityname;
+	var name = $("#prOpt").text();
+	$("#areaData").empty();
+	$("#provinceData").empty();
+	$("#cityData").empty();
+	$("#cityData2").empty();
+	$("#hotCityData").empty();
+	$("#cityOpt").empty();
+	div_display("provinceData",weixin_order_pram.provinceData);
+	if(weixin_order_pram.cityData == null){
+		div_display("hotCityData",weixin_order_pram.hotCityData);
+	}else{
+		div_display("cityData",weixin_order_pram.cityData);
+	}
+	if(name == "热门城市"){
+		cityname = weixin_order_pram.hotCityData[0].name;
+	}else{
+		cityname = weixin_order_pram.cityData[0].name;
+	}
+	$("li:contains('"+name+"')").addClass("current");
+	$("#cityOpt").text(cityname);
+}
+
+$(function(){
+	$("input:button").click(function() {
+		var value = $(".search_input").val();
+		getAddressByValue(value);
+	});
+});
+
+//从输入提示框中选择关键字并查询
+function selectResult(index) {
+    if(index<0){
+        return;
+    }
+    if (navigator.userAgent.indexOf("MSIE") > 0) {
+        document.getElementById("project").onpropertychange = null;
+        document.getElementById("project").onfocus = focus_callback;
+    }
+    //截取输入提示的关键字部分
+    var text = document.getElementById("divid" + (index + 1)).innerHTML.replace(/<[^>].*?>.*<\/[^>].*?>/g,"");
+    document.getElementById("project").value = text;
+    document.getElementById("result1").style.display = "none";
+    $("#cleanNum").show();
+    getAddress(index);
+}
+
+function getAddress(index){
+	var data = address_data[index].value;
+ 	weixin_order_pram.temppr = {name:data.provinceName,id:data.provinceId};
+    weixin_order_pram.tempct = {name:data.cityName,id:data.cityId};
+    weixin_order_pram.temptw = {name:data.countyName,id:data.countyId};
+    var addrType = data.addrType;
+    if(addrType == "A"){
+    	window.parent.showNewAddressFromSelectArea(weixin_order_pram);
+    	weixin_order_pram.backId = new Array();
+    }else if(addrType == "C"){
+ 	   	prToct(data.provinceName);
+ 	   	getCityData(data.provinceName,data.cityName);
+    }else{
+		prToct(data.provinceName);
+		getPrData(data.provinceName,data.cityName);
+    }
+    closeSubDiv();
+}
+
+function getAddressByValue(value){
+	$.ajax({
+   	  type : "POST",
+         url: "/service/address/data/getAddressDataByKey",
+         dataType: "json",
+         data: {
+           "keyword":value
+         },
+         success: function( json ) {
+        	 address_data = json;
+        	 getAddress(0);
+         },
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				alert("服务器连接失败");
+			}
+       });
+}
+
+
+function getCityData(prName,cityName){
+	$("#provinceData").empty();
+	$("#cityData2").empty();
+	$("#hotCityData").empty();
+	$("#areaData").empty();
+	//根据点击的市的id查询区,构造选择区页面
+	var parentId = weixin_order_pram.tempct.id+"/"+weixin_order_pram.tempct.name;
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		data:{
+			parentId: encodeURI(parentId)
+		},
+		url : "/service/address/data/area",
+		contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+		success: function(json){
+			var temp = json.areaData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			$("#prOpt").text(prName);
+			$("#cityOpt").text(cityName);
+			weixin_order_pram.areaData = temp;
+			div_display("cityData2",weixin_order_pram.cityData);
+			$("#cityData").empty();
+			div_display("areaData",temp);
+			$("li:contains('"+cityName+"')").addClass("current");
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});
+}
+
+function getPrData(prName,cityName){
+	$("#provinceData").empty();
+	$("#cityData2").empty();
+	$("#hotCityData").empty();
+	$("#areaData").empty();
+	div_display("provinceData",weixin_order_pram.provinceData);
+	div_display("cityData",weixin_order_pram.cityData);
+	$("#prOpt").text(prName);
+	$("#cityOpt").text(cityName);
+	$("li:contains('"+prName+"')").addClass("current");
+}
+
+
+function cleanuserAddress(){
+	$("#project").val("");
+	$("#cleanNum").hide();
+}
+
+function cleanNumShow(){
+	if($("#project").val().length>0){
+		$("#cleanNum").css('display','block');
+	}else{
+		$("#cleanNum").css('display','none');
+	}
+}
+
+function openSubDiv(){
+	$("#div1")[0].style.display="none";
+	$("#div2")[0].style.display="inline";
+	$("#div3").removeClass().addClass("order_layer_shade z_index");
+	$("#div3")[0].style.display="block";
+}
+
+function closeSubDiv(){
+	$("#div2")[0].style.display="none";
+	$("#div1")[0].style.display="inline";
+	$("#div3").removeClass().addClass("order_layer_shade");
+	$("#div3")[0].style.display="none";
+}
+
+function closeWindow(){
+//	window.close();
+    window.parent.showNewAddressFromSelectArea("");
+}
+//重新加载城市
+function reload(){
+	
+	$("provinceData").html('');
+	$("cityData2").html('');
+	$("hotCityData").html('');
+	$("cityData").html('');
+	$("areaData").html('');
+	
+	
+	weixin_order_pram={};
+	 
+	$.ajax({
+		type : "GET",
+		dataType : "json",
+		url : "/service/address/data/province",
+		success: function(json){
+			//排序热点城市
+			var temp = json.hotCityData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.hotCityData = temp;
+			
+			//排序
+			var temp = json.provinceData;
+			for(var i=0; i<temp.length-1; i++){
+				for(var j=i+1; j<temp.length; j++){
+					var n = "";
+					if(temp[i].abb>temp[j].abb){
+						n = temp[j];
+						temp[j] = temp[i];
+						temp[i] = n;
+					}
+				}
+			}
+			weixin_order_pram.provinceData = temp;
+			//设置热点城市和省
+			div_display("hotCityData",weixin_order_pram.hotCityData);
+			div_display("provinceData",weixin_order_pram.provinceData);
+			$("li:contains(热门城市)").addClass("current");
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert("服务器连接失败");
+		}
+	});	
+}
+
+function del(){
+	$("#project").attr("value","");
+}
+
+
+</script>
+</html>

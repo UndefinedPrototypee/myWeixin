@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>我的地址插件</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+    .addr-hightline {
+   	  font-family: inherit;
+	  font-weight: bolder;
+	  font-variant: initial;
+	  color: blueviolet;
+    }
+    .input {
+		width: 40%;
+ 		height: 30%;
+    }
+    </style>
+    
+  </head>
+  
+  <body id="addressPlugin">
+  
+    <center>
+    	<h1>我的<span class="addr-hightline">地址插件</span>页面</h1>
+    	
+	    <header class="nearby-header d-flex">
+			<div class="search-bar flex-1">
+				<div class="box radius5px d-flex">
+					<!-- <input  id="addrInput" class="input flex-1" type="text" placeholder="输地址搜附近服务点" onkeydown="addrInputKeydown(event)" onkeyup="addrInputKeyup()"> -->
+					<input  id="addrInput" class="input flex-1" type="text" placeholder="输地址搜附近服务点">
+					<br>
+					<button class="btn-clear hide">定位</button>
+					<button id="autoSearch" class="btn-search radius5px-right"><i class="ico"></i></button>
+				</div>
+			</div>
+			<button id="mapSearch" class="btn-gps"></button>
+			<button class="btn-cancel hide">取消</button>
+		</header>
+	
+    </center>
+    
+  </body>
+  
+  <script type="text/javascript" data-main="../../scripts/exec/main" src="../../scripts/tp_scripts/require.js"></script>
+  
+</html>

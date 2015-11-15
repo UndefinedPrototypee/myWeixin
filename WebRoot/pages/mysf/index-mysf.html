@@ -1,0 +1,461 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>顺丰速运</title>
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/style.css">
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/jquery.event.move.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/jquery.event.swipe.js"></script>
+<script type="text/javascript" src="/js/weiwap/common.js"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<body>
+<div class="w100">
+	<div class="mainMenu">
+		<ul>
+			<li class="menu_li icon0910_1"><a id="entrustId" href="/weiwap/send/index-ship.html">寄件</a></li>
+			<li class="menu_li icon0910_2"><a id="queryId" href="/weiwap/waybill/index-query.html">查询</a></li>
+			<li class="menu_li icon0910_3 current"><a id="mysfId" href="/weiwap/mysf/index-mysf.html">我的顺丰</a></li>
+		</ul>
+	</div>
+	<!--会员登入div  -->
+	<div class="userInfo clearfix" id="member_login" style="display:none;">
+		<a href="/weiwap/mysf/user/personalInfo.html">
+			<h3 class="userInfo_name"></h3>
+			<p class="userInfo_grade"><i class="i1" id="memRank"></i></p>
+		</a>
+		<ul class="userInfo_coupon">
+			<li><a id="billId" href="javascript:viod(0)" onclick="dispatchUrl('y')"><span>优惠券</span><p class="yen" id="couponsCount">0</p></a></li>
+			<li><a href="#" id="redEnvelope_url"><span>红包</span><p class="yen" id="redEnvelope">0</p></a></li>
+		</ul>
+	</div>
+	<!--会员注册  -->
+	<div class="userInfo clearfix" id="member_nologin">
+		<ul class="userInfo_login_url clearfix">
+			<li><a id="loginId" href="/weiwap/mysf/login/login.html">会员登录</a></li>
+			<li><a id="enrollId" href="/weiwap/mysf/register/register.html">注册会员</a></li>
+		</ul>
+		<p class="userInfo_login_p">登录或/注册顺丰会员可：随时随地掌控快递物流信息，寄件还送积分等更多会员活动。</p>
+		<ul class="userInfo_coupon">
+			<li><a id="billId" href="javascript:viod(0)" onclick="dispatchUrl('y')"><span>优惠券</span><p class="yen" id="couponsCount">0</p></a></li>
+			<li><a href="#" id="redEnvelope_url"><span>红包</span><p class="yen" id="redEnvelope">0</p></a></li>
+		</ul>
+	</div>
+	<div class="userInfo_menu clearfix">
+		<div class="switch" style="display:none;">
+			<div class="userInfo_con clearfix">
+				<div class="userInfo_con_gradeIcon">
+					<span id="rankPrint" class="userInfo_con_bubble2"></span>
+					<div>
+						<dl class="gradeIcon">
+							<dt></dt>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+						</dl>
+					</div>
+					<div class="cover" style="width:40%;">
+						<dl class="gradeIcon current">
+							<dt></dt>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+							<dd></dd>
+						</dl>
+					</div>
+				</div>		
+				<p>距离下一级<span id="memCode"></span>还差<span class="red" id="memExp"></span>成长值</p>
+			</div>
+			<div class="userInfo_con_url clearfix">
+				<ul>
+					<li class="icon0913_1"><a id="addrId" href="/weiwap/mysf/addrBook.html"><p>地址簿</p></a></li>
+					<li class="icon0913_3"><a id="moonCode" href="/weiwap/monthCardManage/monthlyCard.html"><p>月结卡管理</p></a></li>
+					<!-- <li class="icon0913_4"><a id="clearance" href="/weiwap/overseasPassClearance.html"><p>通关服务</p></a></li> -->
+					<li class="icon0913_4"><a id="clearance" href="/weiwap/mysf/customservice/customService.html"><p>通关服务</p></a></li>
+					<li class="icon0913_5"><a id="integralId" href="/weiwap/mysf/integral/integral.html"><p>我的积分</p></a></li>
+					<li class="icon0913_7"><a id="integralId" href="/weiwap/complaint/complaint.html"><p>我的投诉</p></a></li>
+					<li class="icon0913_2"><a id="myAttention" href="/weiwap/cerinfo/my-flow.html"><p>我的关注</p></a></li>
+					<li class="icon0913_6"><a id="installId" href="#" onclick="toSetUp()"><p>设置</p></a></li>
+				</ul>
+			</div>
+		</div>
+		<h4><p>展开</p><i class="icon">&nbsp;</i></h4>
+	</div>
+	<div style="height:3.0rem;"></div>
+	<div class="clearfix mt10" id="qdId">
+		<div class="index_url4 clearfix">
+			<ul class="clearfix">
+				<li><a href="/weiwap/mysf/memberActivity/activity_list.html"><span class="index_url_icon9"></span><p>花积分</p></a></li>
+				<li class="special" id="special"><a id="signInClick" href="#" onclick="signIn()"><h2 id="signCode">签到</h2><p id="signStatus"></p></a></li>
+				<!--<li class="special"><a href="#"><h2 class="yen">2301</h2><p>明天签到+2积分</p></a></li>-->
+				<li><a href="/weiwap/mysf/memberActivity/activity_list.html"><span class="index_url_icon10"></span><p>会员专区</p></a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div class="clearfix" id="myexpress">
+		<h5 class="index_title clearfix">我的快递<a id="my_more" class="Right blue" href="/weiwap/orderkjgl/expManage.html">全部</a></h5>
+		<div class="index_url1 clearfix">
+			<ul class="clearfix">
+				<li class="first"><a id="a_waitPickup" href="/weiwap/orderkjgl/expManage.html?queryStatus=1"><p>待取件</p><span class="index_url_icon1"></span><i  id="waitPickup" class="warn yen"></i></a></li>
+				<li><a id="a_running" href="/weiwap/orderkjgl/expManage.html?queryStatus=2"><p>运送中</p><span class="index_url_icon2"></span><i  class="warn yen"  id="running"></i></a></li>
+				<li><a id="aleady_singIn" href="/weiwap/orderkjgl/expManage.html?queryStatus=3"><p>已签收</p><span class="index_url_icon3"></span></a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div class="banner1 mt10 clearfix" style="display:none;">
+		<div class="stage">
+			<div class="slide active">
+				<a href="#"><img src=""/></a>
+			</div>
+<!-- 			<div class="slide"> -->
+<!-- 				<a href="#"><img src=""/></a> -->
+<!-- 			</div> -->
+<!-- 			<div class="slide"> -->
+<!-- 				<a href="#"><img src=""/></a> -->
+<!-- 			</div> -->
+		</div>
+		<div class="banner-nav">
+			<a class="dot-select"></a>
+			<a class="dot"></a>
+			<a class="dot"></a>
+		</div>
+	</div>
+
+	<div class="clearfix mt10">
+		<div class="index_url2 clearfix">
+			<ul class="clearfix">
+				<li class="first"><a id="expressId" href="/weiwap/orderkjgl/expManage.html"><span class="index_url_icon5"></span><p>我的快递</p></a></li>
+				<li><a id="orderId" href="/weiwap/orderPlus/order.html"><span class="index_url_icon6"></span><p>我要寄件</p></a></li>
+				<!-- <li id="tgId"><a id="clearanceId" href="/weiwap/overseasPassClearance.html"><span class="index_url_icon7"></span><p>通关服务</p></a></li> -->
+				<li id="tgId"><a id="clearanceId" href="/weiwap/mysf/customservice/customService.html"><span class="index_url_icon7"></span><p>通关服务</p></a></li>
+				<li id="addrId2" style="display:none;"><a id="addrId3" href="/weiwap/mysf/addrBook.html"><span class="index_url_icon9"></span><p>地址簿</p></a></li>
+				<li><a id="activityId" href="/weiwap/mysf/memberActivity/activity_list.html"><span class="index_url_icon8"></span><p>最新活动</p></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<!-- 悬浮工具菜单 -->
+<div class="tools_menu" id="js_content_tools"><a href="javascript:menuShow();"><span>Menu</span></a></div>
+
+<div class="order_layer_shade" style="display:none;"></div><!-- 遮罩弹出层 -->
+
+<!-- 遮罩弹出层4 更多icon -->
+<div class="order_layer_iframe3 clearfix" style="display:none;">
+	<div class="container clearfix">
+		<!-- 待取件电子运单 -->
+		<div class="content_gjx clearfix">
+			<ul>
+				<li class="icon0912_2"><a id="scanOrder" href="javascript:void(0)" onclick="scanPlaceOrder();"><p>扫一扫下单</p></a></li>
+				<li class="icon0912_3"><a id="orderManage" href="/weiwap/orderkjgl/expManage.html"><p>快件管理</p></a></li>
+				<li class="icon0912_4"><a id="addrManage" href="/weiwap/mysf/addrBook.html"><p>地址簿管理</p></a></li>
+				<li class="icon0912_5"><a id="moonManage" href="/weiwap/monthCardManage/monthlyCard.html"><p>月结卡管理</p></a></li>
+				<li class="icon0912_6"><a id="billManage" href="javascript:void(0)" onclick="dispatchUrl('y')"><p>优惠券</p></a></li>
+				<!-- Announced By sfit1108 2015年10月24日11:20:42 
+				<li class="icon0912_7"><a id="clearanceing" href="/weiwap/overseasPassClearance.html"><p>通关服务</p></a></li>
+				-->
+				<li class="icon0912_7"><a id="clearanceing" href="/weiwap/mysf/customservice/customService.html"><p>通关服务</p></a></li>
+				<li class="icon0912_8"><a id="clientId" href="javascript:void(0)" onclick="customerservicedispatchUrl();"><p>在线客服</p></a></li>
+			</ul>
+		</div>
+		<i class="close">close</i>
+	</div>
+</div>
+
+<!-- 遮罩弹出层3 -->
+<!-- 签到成功 -->
+<div class="order_layer_iframe2 clearfix" style="display:none;">
+签到成功！ +2积分
+</div>
+
+<script type="text/javascript">
+	var ucmpBase;
+	var signInStatus = "0"; //是否签到
+	var labelState = "0";//签到按钮状态
+	var mem_No; //会员号
+	var memName;
+	var phone1;
+	var mem_url = "sst.intsit.sfdc.com.cn:1080";
+	$(document).ready(function(){
+		getckNew();
+		//第三方接入的逻辑判断--况亚军
+		if(ucmpBase.systemCode != 'wx'){
+			$(".icon0913_4").hide();
+			$(".icon0913_6").hide();
+			$(".icon0912_2").hide();
+			$(".icon0912_7").hide();
+			$(".icon0912_8").hide();
+			$("#tgId").hide();
+			$("#qdId").hide();
+			$("#addrId2").show();
+			$("#myexpress").show();
+		}else{
+			$("#myexpress").hide();
+		}
+	    $.ajax({
+	        type : "POST",
+	        dataType : "json",
+	        url : "/service/weixin/memberInfo",
+	        success: function(response){
+	        	var isMember=response.isMember;
+	        	mem_No = response.mem_No;
+	        	if(isMember!=null&&isMember!="null"&&isMember=="false"){
+	        		labelState = "1";
+	        		$(".userInfo_con.clearfix").hide();
+	        		$("#member_login").hide();
+	        		$("#member_nologin").show();
+	        		document.getElementById("redEnvelope").innerHTML=response.redEnvelope;
+	                document.getElementById("couponsCount").innerHTML=response.couponsCount;
+	                $("#signCode").text("登录后签到");
+	                $("#signStatus").text("签到拿积分");
+	                $("#special").removeClass().addClass("special userInfo_login_special");
+	                return false;
+	        	}else{
+	        		$("#member_nologin").hide();
+	            	$("#member_login").show();
+	        		var memLevel=response.memLevel;
+	        		if((memLevel!=null&&memLevel!=""&&memLevel!="null")||isMember=="true"){
+        			   //document.getElementById("redEnvelope_url").href=response.redEnvelope_url + '?memberId=' +response.memberId;
+	        		   //if(response.redEnvelope!='0'){							//修改红包详细展示页面   2015-10-13
+	 	        	   document.getElementById("redEnvelope_url").href='coupon/coupon.html'; 
+        			   document.getElementById("redEnvelope").innerHTML=response.redEnvelope;
+	  	               document.getElementById("couponsCount").innerHTML=response.couponsCount;
+	  	               memName = response.memName;
+	  	               phone1 = response.memPhone;
+	  	               setWxConfig();
+		  	   		   getMemExp();
+		  	   	       checkMemData(mem_No);
+	        		}
+	        	}
+	        },
+	        error:function(XMLHttpRequest, textStatus, errorThrown){
+	        }
+	    });
+	});
+	
+	$(function($){
+	//bof
+		
+		//auto player banner slide 
+		(function(t){
+			if($(".js .slide.active").length==0)return;
+			var auto_slide=setInterval(function(){var i=$(".js .slide.active").index();
+			var count=$(".banner-nav").children().length;
+			if(i>=count-1)i=0;
+			else i+=1;
+			$(".banner-nav").prev().children(".slide").eq(i).trigger("activate");},t);
+		
+		})(1000*5);
+	});
+	
+	function menuShow(){
+		$(".order_layer_iframe3").show();
+	}
+	
+	function menuHide(){
+		$(".order_layer_iframe3").hide();
+	}
+	
+	function signIn(){
+		if(labelState == "1"){
+			window.location= '/weiwap/mysf/login/binding.html';
+		}else if(labelState == "2"){
+			window.location= '/weiwap/mysf/integral/integral.html';
+		}
+		if(signInStatus == "1"){
+			return;
+		}
+		var mm ={};
+		mm.memNo = mem_No;
+		mm.channel = "3";
+		 $.ajax({
+		 	type : "POST",
+			data : mm,
+			dataType : "json",		 
+	        url : "/service/weixin/memNoSignIn",
+	        success: function(data){
+	        	if(data == null){
+	        		return;
+	        	}
+	        	labelState = "2"
+	        	var sign = data.curPoint;
+	        	var tom = data.tomorrowPoint;
+	        	var point = data.signInPoint;
+	        	var str = "明天签到+"+tom+"积分";
+	        	$("#signCode").text(sign);
+	        	$("#signStatus").text(str);
+	        	$(".order_layer_iframe2")[0].style.display="block";
+	        	var signPoint = "签到成功！ +"+point+"积分"
+	        	$(".order_layer_iframe2").text(signPoint);
+	        	window.setTimeout(function(){
+	        		$(".order_layer_iframe2")[0].style.display="none";
+	            },"2000");
+	        },
+	        error:function(XMLHttpRequest, textStatus, errorThrown){
+	        }
+	    });
+	}
+	
+	function checkMemData(no){
+		var mem ={};
+		mem.memNo = no;
+		$.ajax({
+			type : "GET",
+			data : mem,
+			dataType : "json",
+			url : "/service/weixin/getSignInByMemNo",
+			success: function(data){
+				signInStatus = data.signInStatus;
+				var curPoint = data.curPoint;
+				var tom = data.tomorrowPoint;
+				var today = data.signInPoint;
+				var str = "明天签到+"+tom+"积分";
+				var str2 = "今天签到+"+today+"积分";
+	        	if(signInStatus == 1){
+	        		labelState = "2";
+	        		$("#signCode").text(curPoint);
+	        		$("#signStatus").text(str);
+	        		signInStatus = "1";
+	        	}else{
+	        		$("#signStatus").text(str2);
+	        		signInStatus = "0";
+	        	}
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				
+			}
+		});
+	}
+	
+	function getMemExp(){
+		$.ajax({
+	        type : "POST",
+	        dataType : "json",
+	        url : "/service/weixin/memberExp",
+	        success: function(data){
+	        	var gradeName = data.gradeName;
+	        	var expVal = data.expVal;
+	        	var expValFrom = data.expValFrom;
+	        	var expValTo = data.expValTo;
+	        	var nickName = data.nickName;
+	        	$("#memRank").text(gradeName);
+	        	$(".userInfo_name").text(nickName);
+	        	var val;
+	        	if(gradeName == "注册会员"){
+	        		val = expVal/expValTo/4*100;
+	        		Math.round(val);
+	        		$("#memCode").text("铜牌");
+	        		$("#rankPrint").removeClass().addClass("userInfo_con_bubble2");
+	        	}else if(gradeName == "铜牌会员"){
+	        		var par = (expVal-expValFrom+parseInt(1))/(expValTo-expValFrom+parseInt(1))/4*100;
+	        		Math.round(par);
+	        		val = parseInt(par)+parseInt(25);
+	        		$("#memCode").text("银牌");
+	        		$("#rankPrint").removeClass().addClass("userInfo_con_bubble3");
+	        	}else if(gradeName == "银牌会员"){
+	        		var par = (expVal-expValFrom+parseInt(1))/(expValTo-expValFrom+parseInt(1))/4*100;
+	        		Math.round(par);
+	        		val = parseInt(par)+parseInt(50);
+	        		$("#memCode").text("金牌");
+	        		$("#rankPrint").removeClass().addClass("userInfo_con_bubble4");
+	        	}else if(gradeName == "金牌会员"){
+	        		var par = (expVal-expValFrom+parseInt(1))/(expValTo-expValFrom+parseInt(1))/4*100;
+	        		Math.round(par);
+	        		val = parseInt(par)+parseInt(75);
+	        		$("#memCode").text("钻石");
+	        		$("#rankPrint").removeClass().addClass("userInfo_con_bubble5");
+	        	}else{
+	        		val = 100;
+	        	}
+	        	var memExp = parseInt(expValTo)+parseInt(1)-expVal;
+        		$("#memExp").text(memExp);
+	        	$(".cover")[0].style.width = val+"%";
+	        },
+	        error:function(XMLHttpRequest, textStatus, errorThrown){
+	            
+	        }
+	    });
+	}
+	function toSetUp(){
+		window.location = "/weiwap/mysf/setting/setting.html?phone1=" + phone1+"&memName="+memName;
+	}
+	
+	//扫一扫下单
+	function scanPlaceOrder(){
+		jWeixin.scanQRCode({
+			needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+			scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+			success: function (res) {
+				var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+				var scanArray  =result.split(",");//判断是否条码 
+			}
+		});
+	};
+	
+	//客服跳转
+	function customerservicedispatchUrl(){
+		window.location="http://sf-ocs.sf-express.com:8080/live800/chatClient/chatbox.jsp?companyID=8935&configID=18&skillId=17&enterurl=weixin";
+	};
+		//优惠券跳转
+	function dispatchUrl(type){
+		window.location= '/weiwap/mysf/coupon/coupon.html?type='+type;
+	};
+	
+	function setWxConfig(){
+		var url = window.location.href;
+		var mm={};
+		mm.url=url;
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			data:mm,
+			cache: false,
+			url:"/service/weixin/querySignService",
+			success:function (wxConfig){
+				jWeixin.config({
+					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId: wxConfig.appId, // 必填，公众号的唯一标识
+					timestamp: wxConfig.timestamp, // 必填，生成签名的时间戳
+					nonceStr: wxConfig.nonceStr, // 必填，生成签名的随机串
+					signature: wxConfig.signature,// 必填，签名，见附录1
+					jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+				});
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown){
+				
+			}
+		});
+
+     };
+     
+     function getckNew(){
+			$.ajax({  
+		        type : "post",  
+		         url : "/service/weixin/getUcmpBaseInfo",  
+		         data : "",  
+		         async : false,  
+		         dataType : "json",
+		         success : function(data){  
+		        	 ucmpBase = data;
+		         }  
+		    });
+		}
+</script>
+</body>
+</html>

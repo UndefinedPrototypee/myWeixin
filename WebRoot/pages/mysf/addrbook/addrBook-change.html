@@ -1,0 +1,411 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>修改地址</title>
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/style.css">
+<link rel="stylesheet" type="text/css" href="/css/sc/weiwap/orderPlus/ordercommon.css">
+<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/common.js"></script>
+<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=5a206bf46f18344e99205b95f7332a12"></script>
+<script type="text/javascript" src="/js/weiwap/orderPlusNewaddress/adressVague.js"></script>
+<script type="text/javascript" src="/js/weiwap/mysf/addrBook.js"></script>
+<script type="text/javascript" src="/js/weiwap/orderPlus/commonUtil.js"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e3ee4754efe5ba2415c7db261415f45c";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<body>
+<div class="order mysf clearfix">
+	<ul class="newsAddress mt10 clearfix">
+		<li class="first clearfix"><p>姓名</p><span class="Left"><input type="text" placeholder="请输入姓名" value="" id="user_name"></span></li>
+		<li class="clearfix"><p>手机号码</p><span class="Left"><input type="text" placeholder="请输入手机或固话" oninput="phoneChange()" value="" id="user_pno"></span><span class="error" style="display:none;">请正确填写手机或固话,固话格式:区号-号码-分机号</span></li>
+		<li class="clearfix">
+			<table border="0" width="100%">
+				<tr valign="top">
+					<td width="75">所在区域</td>
+					<td><span><p id="user_show_all" contenteditable="false" onfocus="javascript:if(this.innerHTML=='请选择省市区'){this.innerHTML='';this.style.color='#333'}" onblur="javascript:if(this.innerHTML==''){this.innerHTML='请选择省市区';this.style.color='#999'}" style="color:#999;" onclick="openSubWin()">请选择省市区</p></span></td>
+					<td width="30"><a class="icon" href="javascript:getLocation();" >&nbsp;</a></td>
+				</tr>
+			</table>
+		</li>
+		<li class="clearfix" id="xxdz">
+			<table border="0" width="100%">
+				<tr valign="top">
+					<td width="75">详细地址</td>
+					<td><span><p contenteditable="true" id="user_address" onkeydown="keydown(event)" onkeyup="keyUp()" onfocus="javascript:if(this.innerHTML=='请详细到门牌号'){this.innerHTML='';this.style.color='#333'}" onblur="javascript:if(this.innerHTML==''){this.innerHTML='请详细到门牌号';this.style.color='#999'}" style="color:#999;">请详细到门牌号</p></span></td>
+         		</tr>
+			</table>
+         </li>
+         <li id="li" style="display:none;">
+           	<div id="result1" name="result1"></div>
+		</li>
+		<li class="addressClipboard clearfix">
+			<h4>地址粘贴板<i class="icon">&nbsp;</i></h4>
+			<div style="display:none"><textarea name="" placeholder="长按可将地址信息粘贴于此进行编辑，粘贴、剪切到上方的对应信息栏中。"></textarea></div>
+		</li>
+	</ul>
+	<div class="checkbox mt10 clearfix"><div class="chk-checkbox" data-rdoval="O" id="c_radio" onclick="checkbox()"><span></span></div><!-- "chk-checkbox":未选;"chk-checkbox"+"chk-checked":已选 -->设为默认寄件人地址</div>
+	<div class="deleteAddr_btn" style="display: none;"><a class="blue" href="javascript:delAddr();">删除</a></div>
+	
+	<div class="order_bottom_placeholder"></div><!-- 底部展位 -->
+
+	
+	<!-- 底部提交按钮层 -->
+	<dl class="order_submit special absolute clearfix">
+		<dt>
+			<a class="close Left" href="/weiwap/mysf/addrBook.html">取消</a>
+		</dt>
+		<dd>
+			<a class="btn Right current" href="javascript:;" onclick="doSubmit()">保 存</a><!-- +"current":可点 -->
+		</dd>
+	</dl>
+</div>
+<!-- 新增地址选择区域页面 iframe-->
+<div id="iframeDiv_SelectArea" style="display: none;" >
+   <iframe id="iframeId_SelectArea" name="iframeId_SelectArea" src="/weiwap/orderPlusNewaddress/selectArea.html"   style="border:0px"></iframe>
+</div>
+
+<!-- 新建地址：不能为空 -->
+<div id="checknull" class="order_layer_iframe2 clearfix" style="display:none;">
+姓名、省市区不能为空
+</div>
+<!-- 新建地址：不能为空 -->
+<div id="checkSave" class="order_layer_iframe2 clearfix" style="display:none;">
+
+</div>
+<div id="divId" class="order_layer_shade" style="display:none;"></div><!-- 遮罩弹出层 -->
+<!-- 遮罩弹出层5 -->
+<div class="order_layer_iframe1 clearfix" style="display:none;">
+	<div class="container clearfix">
+		<i class="close">close</i>
+		<!-- 删除多个地址 -->
+		<div class="content_dzcf clearfix" id="content_scdz" style="display:none;">
+			<h3 class="title"><img src="/css/sc/weiwap/img/hint_icon.png" width="94" height="94"></h3>
+			<div class="box">
+				<p>确定要删除所选地址？</p>
+			</div>
+			<a class="btn btn1 first" href="javascript:delCancel();">取消</a>
+			<a class="btn btn1" href="javascript:selectDel();">确定</a>
+		</div>
+	</div>
+</div>
+
+<!-- 遮罩弹出层6 -->
+<!-- 删除成功 -->
+<div class="order_layer_iframe2 order_layer_iframe2_1 clearfix" style="display:none;">
+	<img class="Left" src="/css/sc/weiwap/orderPlus/img/success.png" width="68" height="68"><span class="Left" id="delIframe">删除成功</span>
+</div>
+</body>
+<script type="text/javascript">
+var addressBookSaveLock = "on";
+var weixin_order_prams = {};
+var weixin_order_temppr = {};
+var weixin_order_tempct = {};
+var weixin_order_temptw = {};
+var addrId = "";
+var openWorld; 
+	$(document).ready(function (){
+		getProviceAndHotCity();
+		// 获取
+	});
+	
+	function updateFrame(){
+		openWorld = window.parent.getAddrBookChange();
+		$(".deleteAddr_btn").show();
+		var addressType = openWorld.addressType;
+		addrId = openWorld.addressId;
+		if(addressType == "S"){
+			$("#c_radio").removeClass("chk-checkbox");
+			$("#c_radio").addClass("chk-checkbox chk-checked");
+			$("#c_radio").attr("data-rdoval","S");
+		}
+		updateAddress();
+	}
+	function updateFrame2(){
+		openWorld = window.parent.getAddrBookSearch();
+		$(".deleteAddr_btn").show();
+		var addressType = openWorld.addressType;
+		addrId = openWorld.addressId;
+		if(addressType == "S"){
+			$("#c_radio").removeClass("chk-checkbox");
+			$("#c_radio").addClass("chk-checkbox chk-checked");
+			$("#c_radio").attr("data-rdoval","S");
+		}
+		updateAddress();
+	}
+	
+	function openSubWin(){
+		//由新增地址页面跳转到选择区域页面
+		$(".order.mysf.clearfix").hide();
+		$("#iframeDiv_SelectArea").show();
+		//调整新增地址选择区域 界面iframe的宽度和高度适合屏幕
+    	$("#iframeId_SelectArea").height($(window).height());
+    	$("#iframeId_SelectArea").width($(window).width());
+	}
+	
+	//由选择区域页面返回新建地址页面  参数JSON为选的的地址数据
+	function showNewAddressFromSelectArea(json){
+	    if(json!=null&&json!=""){
+	    	var areaName = json.temppr.name + " " + json.tempct.name + " " + json.temptw.name;
+	    	getArea(areaName,json);
+	    }
+	    $("#iframeDiv_SelectArea").hide();
+	    $(".order.mysf.clearfix").show();
+	}
+	
+	function getArea(areaName,weixin_order_pram){
+		$("#user_show_all").text(areaName);
+		weixin_order_prams = weixin_order_pram;
+		weixin_order_temppr.name=weixin_order_prams.temppr.name;
+		weixin_order_temppr.id=weixin_order_prams.temppr.id;
+		weixin_order_tempct.name=weixin_order_prams.tempct.name;
+		weixin_order_tempct.id=weixin_order_prams.tempct.id;
+		weixin_order_temptw.name=weixin_order_prams.temptw.name;
+		weixin_order_temptw.id=weixin_order_prams.temptw.id;
+	}
+	
+	function remind(){
+		$("#checknull")[0].style.display="inline";
+		window.setTimeout(function(){
+			$("#checknull")[0].style.display="none";
+	    },"2000");
+		order_layer_iframe2_calculatePosition();
+
+	}
+	
+	function saveAddr(name){
+		$("#checkSave").text(name);
+		$("#checkSave")[0].style.display="inline";
+		window.setTimeout(function(){
+			$("#checkSave")[0].style.display="none";
+			window.location = "/weiwap/mysf/addrBook.html";
+	    },"1000");
+	}
+	
+	/**
+	 * 表单提交
+	 */
+	function doSubmit(){
+		//防止重复提交.
+		if(addressBookSaveLock != "on"){
+			return;
+		}else{
+			//3秒后自动解锁.
+			addressBookSaveLock = "off";
+		    window.setTimeout(function(){
+		    	addressBookSaveLock="on";
+		    },"3000");
+		}
+		saveaddressInfo();
+	}
+	//单点删除
+	function delAddr(){
+		$("#divId").show();
+		$(".content_dzcf").show();
+		$(".order_layer_iframe1").show();
+		order_layer_iframe1_calculatePosition();
+	}
+	
+	function selectDel(){
+		daleteAddress(addrId);
+	}
+	
+	function delCancel(){
+		$("#divId").hide();
+		$(".content_dzcf").hide();
+		$(".order_layer_iframe1").hide();
+	}
+	/**
+	 * 删除基本方法
+	 *@param userAddressId 可以为单个addressId或者以逗号分隔的addressId串
+	 */
+	function daleteAddress(userAddressId){
+		if(userAddressId){
+			$.ajax({
+				type : "GET",
+				dataType : "json",
+				url : "/service/addrbook/userAddress/deleteNew/"+userAddressId,
+				success: function(data){
+					if(data == "success"){
+						remind("删除成功");
+					}else{
+						remind("删除失败");
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+					//tipsDialog("服务器连接失败");
+				}
+			});
+		}
+	}
+	
+	function remind(name){
+		$("#delIframe").text(name);
+		$(".order_layer_iframe2").show();
+		window.setTimeout(function(){
+			$(".order_layer_iframe2").hide();
+			window.location = "/weiwap/mysf/addrBook.html";
+	    },"2000");
+		order_layer_iframe2_calculatePosition();
+	}
+	
+	/**
+	 * 判断是否有特殊字符
+	 * @param s
+	 * @returns true 代表有 false 代表无
+	 */
+	function containSpecial( s )      
+	{      
+	   var containSpecial = RegExp(/[(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\,)(\')(\")(\.)(\/)(\<)(\>)(\?)(\【)(\】)(\（)(\）)]+/);      
+	   return ( containSpecial.test(s) );      
+	} 
+	
+	function tips(content){
+		$("#checknull").show();
+		$("#checknull").html(content);
+		window.setTimeout(function(){
+			$("#checknull").hide()
+			$("#checknull").html("姓名、省市区不能为空");
+	    },"2000");
+		order_layer_iframe2_calculatePosition();
+	}
+	
+	/**
+	 * 切换 checkbox样式
+	 */
+	function checkbox(){
+		var p_class = $("#c_radio").attr("class");
+		if(p_class == "chk-checkbox"){
+			$("#c_radio").removeClass("chk-checkbox");
+			$("#c_radio").addClass("chk-checkbox chk-checked");
+			$("#c_radio").attr("data-rdoval","S");
+		}else{
+			$("#c_radio").removeClass("chk-checkbox chk-checked");
+			$("#c_radio").addClass("chk-checkbox");
+			$("#c_radio").attr("data-rdoval","O");
+		}
+	}
+	
+	function updateAddress(){
+		var user_show_all = openWorld.provinceName + " " + openWorld.cityName + " " + openWorld.countyName;
+		$("#user_show_all").text(user_show_all);
+		$("#user_address").text(openWorld.address);
+		$("#user_name").val(openWorld.contractName);
+		$("#user_pno").val(openWorld.mobile);
+		weixin_order_temppr.id = openWorld.provinceId;
+		weixin_order_temppr.name = openWorld.provinceName;
+		weixin_order_tempct.id = openWorld.cityId;					//755[必填]
+		weixin_order_tempct.name = openWorld.cityName;				//深圳市[必填]
+		weixin_order_temptw.id = openWorld.countyId;					//宝安区[必填]
+		weixin_order_temptw.name = openWorld.countyName;				//宝安区[必填]
+		weixin_order_temppr.addressId = openWorld.addressId	//0FB412F7F04B4BAE96ED5AF50CC96E94[必填,保持使用地址原样userAddressId]
+	}
+	
+	// 源页面由被分享成功地址簿进行展示的相关属性操作 
+	var receiveSharedObj = {
+		// 修改地址后保存地址
+		updAddFrame : function() {
+			openWorld = window.parent.getAddrBookChange();
+			$(".deleteAddr_btn").hide();
+			var addressType = openWorld.addressType;
+			addrId = openWorld.addressId;
+			if(addressType == "S"){
+				$("#c_radio").removeClass("chk-checkbox");
+				$("#c_radio").addClass("chk-checkbox chk-checked");
+				$("#c_radio").attr("data-rdoval","S");
+			}
+			receiveSharedObj.updAndAddAddr();
+		},
+		// 修改后保存操作 
+		updAndAddAddr : function(){
+			var user_show_all = openWorld.provinceName + " " + openWorld.cityName + " " + openWorld.countyName;
+			$("#user_show_all").text(user_show_all);
+			$("#user_address").text(openWorld.address);
+			$("#user_name").val(openWorld.contractName);
+			$("#user_pno").val(openWorld.mobile);
+			weixin_order_temppr.id = openWorld.provinceId;
+			weixin_order_temppr.name = openWorld.provinceName;
+			weixin_order_tempct.id = openWorld.cityId;					//755[必填]
+			weixin_order_tempct.name = openWorld.cityName;				//深圳市[必填]
+			weixin_order_temptw.id = openWorld.countyId;					//宝安区[必填]
+			weixin_order_temptw.name = openWorld.countyName;				//宝安区[必填]
+			// 0FB412F7F04B4BAE96ED5AF50CC96E94[必填,保持使用地址原样userAddressId]，此时置空，修改后仍为新地址 
+			weixin_order_temppr.addressId = "";	
+		}
+	}
+	
+	
+	var preLength = 0;
+
+	function phoneChange(){
+		var phone = $('#user_pno').val();
+		var curLenth = 0;
+		curLenth = phone.length;
+		if(curLenth>preLength){
+			
+			var context = $('#user_pno').val();
+			var text1 = context.substr(0,context.length-1);
+			var text2 = context.substr(context.length-1,context.length);
+			if(/^(010|02\d|0[3-9]\d{2})$/.test(text1)){
+				$('#user_pno').val(text1+'-'+text2);
+			}
+			
+			if(/^(010|02\d|0[3-9]\d{2})$/.test(phone)){
+				$('#user_pno').val(phone+'-');
+			}
+			
+			if(!phone.match(/(010-|02\d-|0[3-9]\d{2}-)/)){
+				 var array = matchSpecial(phone);
+					if(array && array.length>0){
+						array.forEach(function(e){
+							phone = phone.replace(e,'');
+						})
+						$('#user_pno').val(phone)
+						
+					}
+			}else{
+				var array = matchSpecial(phone);
+				if(array && array.length>0){
+					array.forEach(function(e){
+						if(e!='-'){
+							phone = phone.replace(e,'');
+						}
+						
+					})
+					$('#user_pno').val(phone)
+					
+				}
+			}
+			
+			//使光标放置在文本最后
+			var temp = $('#user_pno').val();
+			 $('#user_pno').val("");
+			 $('#user_pno').val(temp);
+			
+		}
+		preLength = $('#user_pno').val().length;
+//		preLength = curLenth;
+	}
+
+	/**
+	 * 判断是否有特殊字符
+	 * @param s
+	 * @returns true 代表有 false 代表无
+	 */
+	function matchSpecial( str )      
+	{      
+	   var containSpecial = RegExp(/[(\~)(\!)(\@)(\#)(\$)(\%)(\s)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\,)(\')(\")(\.)(\/)(\<)(\>)(\?)(\【)(\】)(\（)(\）)]/gi);      
+	   return ( str.match(containSpecial) );      
+	} 
+	
+</script>
+</html>

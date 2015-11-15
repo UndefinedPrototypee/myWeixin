@@ -1,0 +1,67 @@
+@charset "utf-8";  
+/* reset */
+body,dl,dd,ul,p,pre,h1,h2,h3,h4,h5,h6,button,input,form,figure,menu{margin:0;}
+ul,input,button,select,menu{padding:0;}
+table{border-collapse:collapse;}
+ul{list-style:none;}
+img{border:none;}
+a{text-decoration:none;outline:none;}
+ul,li,a,input{-webkit-tap-highlight-color:rgba(255,255,255,0);}
+em,i{font-style:normal;}
+h1,h2,h3,h4,h5,h6{font-weight:normal;}
+input{outline:none;}
+
+@media screen and (max-width:359.9px){ html{font-size:20px;} }
+@media screen and (min-width:360px) and (max-width:374.9px){ html{font-size:22.5px;} }
+@media screen and (min-width:375px) and (max-width:413.9px){ html{font-size:23.4375px;} }
+@media screen and (min-width:414px) and (max-width:479.9px){ html{font-size:25.875px;} }
+@media screen and (min-width:480px) and (max-width:567.9px){ html{font-size:30px;} }
+@media screen and (min-width:568px) and (max-width:639.9px){ html{font-size:35.5px;} }
+@media screen and (min-width:640px){ html{font-size:40px;} }
+
+body{background:#f0f0f0;font-size:0.6rem;}
+body,input,select,textarea{font-family:Helvetica-Light,Helvetica;}
+
+/*orderImg*/
+.orderImg{
+	border-bottom:1px solid #cbcbcb;
+	-webkit-box-shadow:0 0 0.5rem #cbcbcb;
+	box-shadow:0 0 0.5rem #cbcbcb;
+	background:#fff;
+}
+.orderImg img{
+	width:100%;display:block;max-width:640px;margin:0 auto;
+}
+
+/*orderTit*/
+.orderTit{padding:0.25rem 0 0 1rem;line-height:1.25rem;color:#666;}
+
+/*orderAddress*/
+.orderAddress{border-top:1px solid #cbcbcb;padding-bottom:5rem;}
+.orderAddress li{
+	padding:0.375rem 1rem;
+	background:#fff;border-bottom:1px solid #cbcbcb;
+}
+.orderAddress li:active{background:#f2f2f2;}
+.orderAddress li h3{
+	color:#333;font-size:0.7rem;line-height:1.4rem;
+}
+.orderAddress li p{
+	color:#999;font-size:0.6rem;line-height:0.9rem;padding:0.15rem 0;
+}
+
+/*orderBtn*/
+.orderBtn{
+	width:100%;position:fixed;left:0;bottom:0;
+	border-top:1px solid #e3e3e3;
+	-webkit-box-shadow:0 0 0.5rem #e3e3e3;
+	box-shadow:0 0 0.5rem #e3e3e3;
+	padding:0.8rem 0;background:#f5f5f5;
+}
+.orderBtn a{
+	width:7rem;height:1.75rem;display:block;margin:0 auto;cursor:pointer;
+	color:#fff;font-size:0.9rem;line-height:1.75rem;text-align:center;
+	-webkit-border-radius:0.5rem;border-radius:0.5rem;
+	background:#ee4f3e;
+}
+.orderBtn a:active{background:#ec3a27;}
