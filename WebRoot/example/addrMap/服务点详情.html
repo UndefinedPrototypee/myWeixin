@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- saved from url=(0120)http://ucmp-wx.sit.sf-express.com/weiwap/_liduanfeng/6.%E5%BE%AE%E4%BF%A1%E6%94%B9%E7%89%88%202015.11.03/ser-nearby.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="./服务点详情_files/style1.3.9.01.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>服务点详情</title>
+	<link rel="stylesheet" type="text/css" href="./服务点详情_files/style_hyn.css">
+<style type="text/css">.amap-container{cursor:url(http://webapi.amap.com/theme/v1.3/openhand.cur),default;}.amap-drag{cursor:url(http://webapi.amap.com/theme/v1.3/closedhand.cur),default;}</style><style>#haloword-pron { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -94px -34px; }#haloword-pron:hover { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -111px -34px; }#haloword-open { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -94px -17px; }#haloword-open:hover { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -111px -17px; }#haloword-close { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -94px 0; }#haloword-close:hover { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -111px 0; }#haloword-add { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -94px -51px; }#haloword-add:hover { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -111px -51px; }#haloword-remove { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -94px -68px; }#haloword-remove:hover { background: url(chrome-extension://bhkcehpnnlgncpnefpanachijmhikocj/img/icon.svg) -111px -68px; }</style></head>
+<body class="ser-nearby-page">
+<header class="nearby-header d-flex">
+	<div class="search-bar flex-1">
+		<div class="box radius5px d-flex">
+			<input id="addrInput" class="input flex-1" type="text" placeholder="输地址搜附近服务点">
+			<button class="btn-clear hide"></button>
+			<button class="btn-search radius5px-right"><i class="ico"></i></button>
+		</div>
+	</div>
+	<button class="btn-gps"></button>
+	<button class="btn-cancel hide">取消</button>
+</header>
+<section class="add-ass hide">
+	<ul id="result_list" style="display: none;"><li id="divid1" onmouseover="openMarkerTipById(1,this)" onclick="selectResult(0)" onmouseout="onmouseout_MarkerStyle(1,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="441900,113.780682,23.019607"><span class="addr-name">BB Club</span><span class="addr-area" style="color:#C1C1C1;">广东省东莞市</span></li><li id="divid2" onmouseover="openMarkerTipById(2,this)" onclick="selectResult(1)" onmouseout="onmouseout_MarkerStyle(2,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="810005,114.179168,22.295221"><span class="addr-name">Bright Star Hongkong</span><span class="addr-area" style="color:#C1C1C1;">香港特别行政区油尖旺区</span></li><li id="divid3" onmouseover="openMarkerTipById(3,this)" onclick="selectResult(2)" onmouseout="onmouseout_MarkerStyle(3,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="511421,104.147295,29.995363"><span class="addr-name">Beauty Shop</span><span class="addr-area" style="color:#C1C1C1;">四川省眉山市仁寿县</span></li><li id="divid4" onmouseover="openMarkerTipById(4,this)" onclick="selectResult(3)" onmouseout="onmouseout_MarkerStyle(4,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="820002,113.549879,22.198513"><span class="addr-name">Baby in the house</span><span class="addr-area" style="color:#C1C1C1;">澳门特别行政区花王堂区</span></li><li id="divid5" onmouseover="openMarkerTipById(5,this)" onclick="selectResult(4)" onmouseout="onmouseout_MarkerStyle(5,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="512002,104.650279,30.120786"><span class="addr-name">BEAUTIFUL BABY</span><span class="addr-area" style="color:#C1C1C1;">四川省资阳市雁江区</span></li><li id="divid6" onmouseover="openMarkerTipById(6,this)" onclick="selectResult(5)" onmouseout="onmouseout_MarkerStyle(6,this)" style="font-size: 13px; cursor: pointer; padding: 5px;" data="820002,113.551006,22.197933"><span class="addr-name">Beauty Order</span><span class="addr-area" style="color:#C1C1C1;">澳门特别行政区花王堂区</span></li><li id="divid7" onmouseover="openMarkerTipById(7,this)" onclick="selectResult(6)" onmouseout="onmouseout_MarkerStyle(7,this)" style="font-size: 13px;cursor:pointer;padding:5px 5px 5px 5px;" data="450621,107.98108,22.150057"><span class="addr-name">BUSINESS CASUAL</span><span class="addr-area" style="color:#C1C1C1;">广西壮族自治区防城港市上思县</span></li><li id="divid8" onmouseover="openMarkerTipById(8,this)" onclick="selectResult(7)" onmouseout="onmouseout_MarkerStyle(8,this)" style="font-size: 13px;cursor:pointer;padding:5px 5px 5px 5px;" data="110106,116.321337,39.894966"><span class="addr-name">北京西站</span><span class="addr-area" style="color:#C1C1C1;">北京市丰台区</span></li><li id="divid9" onmouseover="openMarkerTipById(9,this)" onclick="selectResult(8)" onmouseout="onmouseout_MarkerStyle(9,this)" style="font-size: 13px;cursor:pointer;padding:5px 5px 5px 5px;" data="110101,116.427282,39.903716"><span class="addr-name">北京站</span><span class="addr-area" style="color:#C1C1C1;">北京市东城区</span></li><li id="divid10" onmouseover="openMarkerTipById(10,this)" onclick="selectResult(9)" onmouseout="onmouseout_MarkerStyle(10,this)" style="font-size: 13px;cursor:pointer;padding:5px 5px 5px 5px;" data="110106,116.379092,39.864881"><span class="addr-name">北京南站</span><span class="addr-area" style="color:#C1C1C1;">北京市丰台区</span></li></ul>
+</section>
+<article id="wrapper" class="">
+	<ul class="tab nearby-lists-tab d-flex">
+		<li class="flex-1 nowrap">佛山市南海区什么什么什么</li>
+		<li class="flex-1">我关注的</li>
+	</ul>
+
+	<ul class="ser-lists">
+		<li class="ser">
+			<div class="ser-info-box d-flex">
+				<img class="logo radius100" src="./服务点详情_files/wanda_small_sc.jpg">
+				<figure class="flex-right flex-1">
+					<h2 class="h1 nowrap">美宜佳6936天河银利街店</h2>
+					<p class="nowrap">上海黄浦区南京西路南京西路西南京西路路是西还有很多</p>
+					<span>自寄服务</span><span>自取服务</span><span>收件服务</span>
+				</figure>
+			</div>
+			<div class="ser-to d-flex">
+				<span>1.2km</span>
+				<p class="flex-1"><a class="order">自寄下单</a><a class="tel" href="tel:10086">电话</a></p>
+			</div>
+		</li>
+		<li class="ser">
+			<div class="ser-info-box d-flex">
+				<img class="logo radius100" src="./服务点详情_files/move-you-fingers_small_sc.jpg">
+				<figure class="flex-right flex-1">
+					<h2 class="h1 nowrap">美宜佳天河银利街店</h2>
+					<p class="nowrap">上海黄浦区南京西路南京西路西南京西路路是西还有很多</p>
+					<span>自寄服务</span><span>自取服务</span><span>收件服务</span>
+				</figure>
+			</div>
+			<div class="ser-to d-flex">
+				<span>1.2km</span>
+				<p class="flex-1"><a class="order">自寄下单</a><a class="tel" href="tel:10086">电话</a></p>
+			</div>
+			<div class="flowed"><i class="ico"></i><span>已关注</span></div>
+		</li>
+		<li class="ser">
+			<div class="ser-info-box d-flex">
+				<img class="logo radius100" src="./服务点详情_files/insurance_small_sc.jpg">
+				<figure class="flex-right flex-1">
+					<h2 class="h1 nowrap">美宜佳6936天河银利街店</h2>
+					<p class="nowrap">上海黄浦区南京西路南京西路西南京西路路是西还有很多</p>
+					<span>自寄服务</span><span>自取服务</span><span>收件服务</span>
+				</figure>
+			</div>
+			<div class="ser-to d-flex">
+				<span>1.2km</span>
+				<p class="flex-1"><a class="order">自寄下单</a><a class="tel" href="tel:10086">电话</a></p>
+			</div>
+		</li>
+		<li class="ser">
+			<div class="ser-info-box d-flex">
+				<img class="logo radius100" src="./服务点详情_files/thumb_small_sc.jpg">
+				<figure class="flex-right flex-1">
+					<h2 class="h1 nowrap">美宜佳6936天河银利街店</h2>
+					<p class="nowrap">上海黄浦区南京西路南京西路西南京西路路是西还有很多</p>
+					<span>自寄服务</span><span>自取服务</span><span>收件服务</span>
+				</figure>
+			</div>
+			<div class="ser-to d-flex">
+				<span>1.2km</span>
+				<p class="flex-1"><a class="order">自寄下单</a><a class="tel" href="tel:10086">电话</a></p>
+			</div>
+		</li>
+		<li class="ser">
+			<div class="ser-info-box d-flex">
+				<img class="logo radius100" src="./服务点详情_files/wanda_small_sc.jpg">
+				<figure class="flex-right flex-1">
+					<h2 class="h1 nowrap">美宜佳6936天河银利街店</h2>
+					<p class="nowrap">上海黄浦区南京西路南京西路西南京西路路是西还有很多</p>
+					<span>自寄服务</span><span>自取服务</span><span>收件服务</span>
+				</figure>
+			</div>
+			<div class="ser-to d-flex">
+				<span>1.2km</span>
+				<p class="flex-1"><a class="order">自寄下单</a><a class="tel" href="tel:10086">电话</a></p>
+			</div>
+		</li>
+	</ul>
+	<div class="no-list hide">
+		<img src="./服务点详情_files/no-list.png">
+		<p>搜索此地址附近的服务点~<br>换个关键词试试吧~</p>
+	</div>
+</article>
+<script type="text/javascript" src="./服务点详情_files/zepto.min.js"></script>
+<script type="text/javascript" src="./服务点详情_files/amaps-v1.3.js"></script>
+<script type="text/javascript" src="./服务点详情_files/myAddressUtil.js"></script>
+<script type="text/javascript">
+var flag = false;
+
+var searchInput = $(".nearby-header input.input");
+searchInput.focus(function() {
+	flag = false;
+	filter_time($(this));
+	$("#wrapper").addClass("search-focus");
+	$(".btn-gps").addClass("hide");
+	$(".btn-cancel").removeClass("hide").click(function() {
+		flag = true;
+		$(this).addClass("hide");
+		$("#wrapper").removeClass("search-focus");
+		$(".btn-gps").removeClass("hide");
+	});
+}).blur(function() {
+	flag = true;
+	$("#wrapper").removeClass("search-focus");
+	$(".btn-gps").removeClass("hide");
+	$(".btn-cancel").addClass("hide");
+});
+
+function filter_time(obj) {
+	var time = setInterval(function() {
+		filter_staff_from_exist(obj);
+	}, 150);
+	$(this).bind("blur", function() {
+		clearInterval(time);
+	});
+}
+
+function filter_staff_from_exist(obj) {
+	var str = "";
+	var now = "";
+	now = $.trim(obj.val());
+	if (now != "" && now != str) {
+		if (now.length > 0) {
+			$(".nearby-header button.btn-clear").removeClass("hide").click(function() {
+				obj.val("");
+			});
+			if (!flag) {
+				$(".add-ass").removeClass("hide").find("li").each(function() {
+					$(this).click(function() {
+						// 填充选中的地址值
+						var select = $(this);
+	       				var selectVal = select.find(".addr-area").text() + select.find(".addr-name").text();
+	       				obj.val(select.find(".addr-name").text() + " - " + selectVal);
+					});
+				});
+			} else {
+				setTimeout(function() {
+					$(".add-ass").addClass("hide");
+				}, 200);
+			}
+		}
+	} else {
+		$(".nearby-header button.btn-clear").addClass("hide");
+	}
+}
+</script>
+
+<div id="haloword-lookup" class="ui-widget-content ui-draggable"><div id="haloword-title"><span id="haloword-word"></span><a herf="#" id="haloword-pron" class="haloword-button" title="发音"></a><audio id="haloword-audio"></audio><div id="haloword-control-container"><a herf="#" id="haloword-add" class="haloword-button" title="加入单词表"></a><a herf="#" id="haloword-remove" class="haloword-button" title="移出单词表"></a><a href="http://ucmp-wx.sit.sf-express.com/weiwap/_liduanfeng/6.%E5%BE%AE%E4%BF%A1%E6%94%B9%E7%89%88%202015.11.03/ser-nearby.html#" id="haloword-open" class="haloword-button" title="查看单词详细释义" target="_blank"></a><a herf="#" id="haloword-close" class="haloword-button" title="关闭查询窗"></a></div><br style="clear: both;"></div><div id="haloword-content"></div></div></body></html>
